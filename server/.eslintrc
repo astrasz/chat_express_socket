@@ -22,5 +22,7 @@
             }
         ]
     },
-    "ignorePatterns": []
+    "ignorePatterns": [
+        "src/config/config.js"
+    ]
 }

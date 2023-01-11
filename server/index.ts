@@ -22,7 +22,7 @@ const server = app.listen(port, () => console.log(`Server is running on port: ${
 
 const connect = async () => {
     try {
-        await db.authenticate();
+        await db.sequelize.authenticate();
         console.log('Connection has been established')
     } catch (error) {
         console.log("Unable to connect to the database", error);

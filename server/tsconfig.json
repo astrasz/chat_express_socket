@@ -11,10 +11,15 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "moduleResolution": "node"
+        "moduleResolution": "node",
+        "outDir": "dist",
+        "allowJs": true,
+        "strictNullChecks": true
     },
     "include": [
-        "src/**/*.ts"
+        "src/**/*.ts",
+        "index.ts",
+        ".sequlizerc"
     ],
     "exclude": [
         "node_modules"
