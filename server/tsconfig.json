@@ -13,8 +13,10 @@
         "forceConsistentCasingInFileNames": true,
         "moduleResolution": "node",
         "outDir": "dist",
+        "rootDir": "src",
         "allowJs": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "experimentalDecorators": true
     },
     "include": [
         "src/**/*.ts",

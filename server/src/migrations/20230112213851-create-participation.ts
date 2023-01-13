@@ -2,29 +2,33 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('participations', {
       _id: {
         allowNull: false,
         defaultValue: Sequelize.UUIDV4,
         primaryKey: true,
         type: Sequelize.UUID
       },
-      firstname: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      lastname: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      email: {
-        type: Sequelize.STRING,
+      userId: {
+        type: Sequelize.UUID,
         allowNull: false,
-        unique: true
+        references: {
+          model: {
+            tableName: 'users',
+          },
+          key: '_id',
+        }
+
       },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false
+      conversationId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: {
+            tableName: 'conversations',
+          },
+          key: '_id',
+        }
       },
       createdAt: {
         allowNull: false,
@@ -38,9 +42,11 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
+    }, {
+      logging: console.log
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('users');
+    await queryInterface.dropTable('participations');
   }
 };
