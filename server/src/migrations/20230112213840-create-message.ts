@@ -32,16 +32,15 @@ module.exports = {
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: new Date()
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: new Date()
       },
-      deletedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      }
+      deletedAt: Sequelize.DATE,
     });
   },
   async down(queryInterface, Sequelize) {

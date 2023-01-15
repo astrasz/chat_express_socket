@@ -11,6 +11,7 @@ interface UserAttributes {
   lastname: string;
   email: string;
   password: string;
+  lastLogout: Date | null;
 }
 
 type UserCreationAttributes = Optional<UserAttributes, '_id'>
@@ -27,37 +28,42 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
     defaultValue: DataType.UUIDV4,
     primaryKey: true
   })
-  _id!: string;
+  declare _id: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false
   })
-  firstname!: string;
+  declare firstname: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false
   })
-  lastname!: string;
+  declare lastname: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
     unique: true
   })
-  email!: string;
+  declare email: string;
 
   @Column({
     type: DataType.STRING,
     allowNull: false,
   })
-  password!: string;
+  declare password: string;
+
+  @Column({
+    type: DataType.DATE
+  })
+  declare lastLogout: Date | null
 
   @BelongsToMany(() => Conversation, () => Participation)
-  conversations!: Array<Conversation & { Participation: Participation; }>;
+  declare conversations: Array<Conversation & { Participation: Participation; }>;
 
   @HasMany(() => Message)
-  messages!: Message[];
+  declare messages: Message[];
 
 }

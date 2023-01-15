@@ -10,6 +10,8 @@ interface ConversationAttributes {
   _id: string,
   title: string,
   lastMessageId: string,
+  participants: User[],
+  messages: Message[]
 }
 
 type ConversationCreationAttributes = Optional<ConversationAttributes, '_id'>
@@ -25,26 +27,26 @@ export class Conversation extends Model<ConversationAttributes, ConversationCrea
     defaultValue: DataType.UUIDV4,
     primaryKey: true
   })
-  _id!: string;
+  declare _id: string;
 
   @Column({
     type: DataType.STRING,
   })
-  title?: string | null;
+  declare title?: string | null;
 
   @ForeignKey(() => Message)
   @Column({
     type: DataType.UUID,
   })
-  lastMessageId?: string | null
+  declare lastMessageId?: string | null
 
 
   @HasMany(() => Message)
-  messages!: Message[]
+  declare messages: Message[]
 
   @BelongsToMany(() => User, () => Participation)
-  participants!: Array<User & { Participation: Participation }>
+  declare participants: Array<User & { Participation: Participation }>
 
   @HasOne(() => Message)
-  lastMessage!: Message
+  declare lastMessage: Message
 }

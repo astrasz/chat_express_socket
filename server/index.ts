@@ -7,6 +7,8 @@ import express, { NextFunction, Request, Response } from "express";
 import bodyParser from "body-parser";
 import { Server } from "socket.io";
 import sequelize from "./src/models";
+import { chat } from "./src/services/chat/chat.service";
+import { routes } from "./src/routes";
 
 const app = express();
 const port = process.env.PORT;
@@ -23,34 +25,17 @@ app.use((
     res.status(500).json({ message: err.message })
 });
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Client have just been created');
-});
 
-console.log('sequ', sequelize.models);
+
 
 sequelize.authenticate()
     .then(() => {
         console.log('Database connection has been established');
         const server = app.listen(port, () => console.log(`Server is running on port: ${port}`));
         const io = new Server(server);
-        io.on('connection', (socket) => {
-            console.log('user connected');
-            socket.on('message', (msg: string) => {
-                io.emit('message', msg)
-            });
-
-            socket.on('disconnect', () => {
-                console.log('user disconnected');
-            });
-        })
+        routes(app, io);
+        chat(io);
     })
     .catch((err) => {
         console.log("Unable to connect to the database", err)
-    })
-
-
-// sequelize.sync();
-
-
-
+    });

@@ -25,31 +25,31 @@ export class Message extends Model<MessageAttributes, MessageCreationAtributes> 
     defaultValue: DataType.UUIDV4,
     primaryKey: true
   })
-  _id!: string;
+  declare _id: string;
 
   @Column({
     type: DataType.STRING,
   })
-  content?: string;
+  declare content?: string;
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
     allowNull: false
   })
-  senderId!: string;
+  declare senderId: string;
 
   @ForeignKey(() => Conversation)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-  conversationId!: string;
+  declare conversationId: string;
 
   @BelongsTo(() => User)
-  sender!: User
+  declare sender: User
 
   @BelongsTo(() => Conversation)
-  conversation!: Conversation
+  declare conversation: Conversation
 
 }

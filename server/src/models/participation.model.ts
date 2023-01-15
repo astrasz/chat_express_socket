@@ -25,27 +25,27 @@ export class Participation extends Model<ParticipationAttributes, ParticipationC
     defaultValue: DataType.UUIDV4,
     primaryKey: true
   })
-  _id!: string;
+  declare _id: string;
 
   @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
     allowNull: false
   })
-  userId!: string
+  declare userId: string
 
   @ForeignKey(() => Conversation)
   @Column({
     type: DataType.UUID,
     allowNull: false
   })
-  conversationId!: string
+  declare conversationId: string
 
 
   @BelongsTo(() => User)
-  participant!: User
+  declare participant: User
 
   @BelongsTo(() => Conversation)
-  conversation!: Conversation
+  declare conversation: Conversation
 
 }

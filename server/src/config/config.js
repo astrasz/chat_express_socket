@@ -23,5 +23,9 @@ module.exports = {
     "database": "database_production",
     "host": "127.0.0.1",
     "dialect": "mysql"
+  },
+  "JWT": {
+    "secret": process.env.TOKEN_SECRET,
+    "exp": process.env.TOKEN_EXP
   }
 }
