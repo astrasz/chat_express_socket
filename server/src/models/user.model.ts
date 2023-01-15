@@ -12,6 +12,7 @@ interface UserAttributes {
   email: string;
   password: string;
   lastLogout: Date | null;
+  lastLogin: Date | null;
 }
 
 type UserCreationAttributes = Optional<UserAttributes, '_id'>
@@ -55,10 +56,19 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   })
   declare password: string;
 
-  @Column({
-    type: DataType.DATE
-  })
+  @Column(DataType.DATE)
   declare lastLogout: Date | null
+
+  @Column(DataType.DATE)
+  declare lastLogin: Date | null
+
+  @Column(DataType.VIRTUAL)
+  get isActive() {
+    return (this.lastLogout !== null && this.lastLogin !== null && this.lastLogout < this.lastLogin)
+      ||
+      (this.lastLogin !== null && this.lastLogout === null)
+  }
+
 
   @BelongsToMany(() => Conversation, () => Participation)
   declare conversations: Array<Conversation & { Participation: Participation; }>;

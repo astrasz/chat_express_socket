@@ -60,6 +60,9 @@ export const login = async (req: Request, res: Response): Promise<Response<strin
         exp: exp
     }, JWT.secret ?? '')
 
+    user.lastLogin = new Date();
+    await user.save();
+
     return res.status(200).json({
         success: true,
         data: {
