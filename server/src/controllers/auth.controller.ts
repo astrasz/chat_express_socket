@@ -7,10 +7,9 @@ import { VerifiedRequest } from "../utils/checkToken";
 
 export const signup = async (req: Request, res: Response): Promise<Response<string>> => {
 
-    const { email, firstname, lastname, password, repeatedPassword } = req.body;
+    const { email, username, password, repeatedPassword } = req.body;
 
-
-    if (firstname === null || lastname === null) return res.status(400).json({ message: 'Firstname and lastname are required' });
+    if (username === null) return res.status(400).json({ message: 'Username is required' });
 
     const prevUser: User | null = await User.findOne({ where: { email } })
     if (prevUser) return res.status(400).json({ message: 'Cannot sign up with this email' })
@@ -22,8 +21,7 @@ export const signup = async (req: Request, res: Response): Promise<Response<stri
 
         const user = await User.create({
             email,
-            firstname,
-            lastname,
+            username,
             password: hashedPassword,
         });
 
@@ -66,7 +64,7 @@ export const login = async (req: Request, res: Response): Promise<Response<strin
     return res.status(200).json({
         success: true,
         data: {
-            id: user.id,
+            id: user._id,
             email: user.email,
             token
         }

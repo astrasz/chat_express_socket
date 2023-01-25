@@ -29,7 +29,6 @@ export const checkToken = async (req: VerifiedRequest, res: Response, next: Next
         next();
 
     } catch (err) {
-        console.log('Error from checkToken ', err);
         return res.status(403).send({ auth: false, message: 'Authorization failed' });
     }
 

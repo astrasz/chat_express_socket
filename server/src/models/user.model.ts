@@ -7,8 +7,7 @@ import { Participation } from './participation.model';
 
 interface UserAttributes {
   _id: string;
-  firstname: string;
-  lastname: string;
+  username: string;
   email: string;
   password: string;
   lastLogout: Date | null;
@@ -35,13 +34,7 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
     type: DataType.STRING,
     allowNull: false
   })
-  declare firstname: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false
-  })
-  declare lastname: string;
+  declare username: string;
 
   @Column({
     type: DataType.STRING,
