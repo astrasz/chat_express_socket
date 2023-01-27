@@ -62,7 +62,7 @@ const Login = () => {
 
                 )
                 }
-                <h3>Log In</h3>
+                <h3 className='mb-3'>Log In</h3>
                 <div className="mb-3">
                     <label>Login</label>
                     <input
@@ -84,11 +84,11 @@ const Login = () => {
                     />
                 </div>
                 <div className="d-grid">
-                    <button type="submit" className="btn btn-primary">
+                    <button type="submit" className="btn btn-primary mt-3">
                         Log in
                     </button>
                 </div>
-                <p>
+                <p className='mt-3'>
                     Still unregistered? <a href="/signup">sign up</a>
                 </p>
             </form>

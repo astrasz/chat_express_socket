@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-import Chat from './components/chat/Chat';
+import ChatLayout from './components/chat/ChatLayout';
 import Signup from './components/Signup';
 import Login from './components/Login';
 import { useAuthContext } from './hooks/useAuthContext';
@@ -18,7 +18,7 @@ function App() {
       <Routes>
         (<Route
           path='/'
-          element={context.user ? <Chat /> : <Navigate to='/login' />}
+          element={context.user ? <ChatLayout /> : <Navigate to='/login' />}
         />)
         <Route
           path='/login'

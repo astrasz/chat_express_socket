@@ -73,7 +73,7 @@ const Signup = () => {
 
                 )
                 }
-                <h3>Sign Up</h3>
+                <h3 className='mb-3'>Sign Up</h3>
                 <div className="mb-3">
                     <label>Username</label>
                     <input type="text"
@@ -115,12 +115,12 @@ const Signup = () => {
                     />
                 </div>
                 <div className="d-grid">
-                    <button type="submit" className="btn btn-primary">
+                    <button type="submit" className="btn btn-primary mt-3">
                         Sign Up
                     </button>
                 </div>
-                <p>
-                    Already registered <a href="/login">sign in?</a>
+                <p className='mt-3'>
+                    Already registered? <a href="/login">sign in</a>
                 </p>
             </form>
 
