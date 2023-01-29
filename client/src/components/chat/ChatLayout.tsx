@@ -1,10 +1,17 @@
 import React from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import { useAppDispatch } from '../../store/hooks';
+import { fetchUsers } from '../../store/slices/usersSlice';
 
 import LeaveButton from './LeaveButton';
 import Search from './sidebar/Search';
 import UsersList from './sidebar/UsersList';
 import MessagesList from './window/MessagesList';
 import InputBox from './window/InputBox';
+import { useAuthContext } from '../../hooks/useAuthContext';
 
 type ChatProps = {
 
@@ -12,8 +19,45 @@ type ChatProps = {
 
 
 const ChatLayout = ({ }: ChatProps) => {
+    const [error, setError] = useState(false);
+    const dispatch = useAppDispatch();
+    const { user } = useAuthContext();
+    const toastId = Math.random()
+
+
+    const notify = (message: string) => {
+        if (!toast.isActive(toastId)) {
+            toast(message, {
+                toastId
+            })
+        }
+    }
+
+    useEffect(() => {
+        if (user?.token) {
+            dispatch(fetchUsers(user.token))
+                .unwrap()
+                .catch((err: any) => {
+                    setError(true);
+                    notify(`${err.message}: cannot fetch users list.`)
+                });
+        }
+    }, [dispatch, user?.token])
+
     return (
         <section>
+            <ToastContainer
+                position="bottom-left"
+                autoClose={6000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
             <div className="container d-flex justify-content-center align-items-center">
                 <div className="row">
                     <div className="col-md-12">
@@ -28,7 +72,7 @@ const ChatLayout = ({ }: ChatProps) => {
                                     <div className="col-6 col-md-5 col-lg-4 col-xl-3 mb-4">
                                         <div className="p-3 chat-navigation">
                                             <Search />
-                                            <UsersList />
+                                            {!error && <UsersList />}
                                         </div>
                                     </div>
 

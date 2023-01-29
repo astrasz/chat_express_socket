@@ -21,3 +21,32 @@ export const logout = async () => {
         method: 'GET',
     })
 }
+
+export const getUsers = async (token: string | '') => {
+    return await fetch('/api/users', {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+}
+
+export const findConversationByParticipants = async (token: string, partnerId: string) => {
+    return await fetch(`/api/conversations?partner=${partnerId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+}
+
+export const createConversation = async (token: string, partnerId: any) => {
+    return await fetch('/api/conversations', {
+        method: 'POST',
+        body: partnerId,
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    })
+}

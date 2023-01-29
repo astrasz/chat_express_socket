@@ -1,15 +1,31 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { createConversation, findConversationByParticipants } from '../../../api';
+import { useAuthContext } from '../../../hooks/useAuthContext';
+import { UserType } from './UsersList';
 
-interface UserType {
-    username: string,
-    lastMessage: string,
-    lastMessageDate: string,
-    avatar: string
-}
 
-const User = ({ username, lastMessage, lastMessageDate, avatar }: UserType) => {
+
+
+const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType) => {
+
+    const { user } = useAuthContext()
+
+    const [conversation, setConversation] = useState<any>(null);
+
+    const handleClick = async () => {
+
+        const findResponse = await findConversationByParticipants(user?.token ?? '', _id ?? '');
+        let conversation = await findResponse.json();
+
+        if (Array.isArray(conversation) && conversation.length === 0) {
+            const createResponse = await createConversation(user?.token ?? '', JSON.stringify({ partnerId: _id }));
+            conversation = await createResponse.json();
+        }
+        setConversation(conversation);
+    }
+
     return (
-        <li className="p-1 mb-3 list-group-item border-bottom-1">
+        <li className="p-1 mb-3 list-group-item border-bottom-1" onClick={handleClick}>
             <a href="#!" className="d-flex justify-content-between text-decoration-none">
                 <div className="d-flex flex-row">
                     <div>

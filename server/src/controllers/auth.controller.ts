@@ -51,10 +51,11 @@ export const login = async (req: Request, res: Response): Promise<Response<strin
 
     const hours = expConfig / 1000 / 60 / 60
     const iat = new Date();
-    const exp = iat.setHours(iat.getHours() + hours);
+
+    const exp = (new Date()).setHours(iat.getHours() + hours);
     const token = jwt.sign({
         id: user._id,
-        iat: iat.getTime() / 1000,
+        iat: iat.getTime(),
         exp: exp
     }, JWT.secret ?? '')
 
