@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { createConversation, findConversationByParticipants } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { joinRoom } from '../socketClient';
 import { UserType } from './UsersList';
 
 
@@ -10,10 +11,7 @@ const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType)
 
     const { user } = useAuthContext()
 
-    const [conversation, setConversation] = useState<any>(null);
-
     const handleClick = async () => {
-
         const findResponse = await findConversationByParticipants(user?.token ?? '', _id ?? '');
         let conversation = await findResponse.json();
 
@@ -21,7 +19,12 @@ const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType)
             const createResponse = await createConversation(user?.token ?? '', JSON.stringify({ partnerId: _id }));
             conversation = await createResponse.json();
         }
-        setConversation(conversation);
+
+        let conversationId = conversation._id;
+        if (Array.isArray(conversation)) {
+            conversationId = conversation[0]._id
+        }
+        joinRoom(conversationId, _id ?? '');
     }
 
     return (

@@ -1,4 +1,3 @@
-import io from 'socket.io-client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 
@@ -11,7 +10,6 @@ import Login from './components/Login';
 
 
 
-const socket = io();
 
 function App() {
   const context = useAuthContext();

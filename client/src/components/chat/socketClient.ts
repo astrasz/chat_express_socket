@@ -1,25 +1,28 @@
 import { io } from "socket.io-client";
 
-const getToken = () => {
-    const user = JSON.parse(sessionStorage.getItem('user') ?? '');
-    return user.token ?? null
-}
-
-const url = window.location.protocol + '\\' + window.location.host
+const url = window.location.protocol + '//' + window.location.host
 let socket: any;
-export const setConnection = () => {
+export const setConnection = (token: string) => {
     socket = io(url, {
         autoConnect: false,
         transportOptions: {
             polling: {
                 extraHeaders: {
-                    token: getToken()
+                    token,
                 }
             }
         }
     })
-
-    socket.on('connect', () => console.log('Connection established'));
-    socket.on('disconnect', () => console.log('Connection ended'))
+    socket.emit('connection', () => console.log('Connection established'));
     socket.open();
+}
+
+export const joinRoom = (conversationId: string, partnerId: string) => {
+    socket.emit('joinRoom', { conversationId, partnerId })
+}
+
+export const disconnect = () => {
+    socket.emit('disconnectUser', () => {
+        console.log('Disconnection');
+    })
 }

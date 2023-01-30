@@ -14,22 +14,22 @@ export const checkToken = async (req: VerifiedRequest, res: Response, next: Next
     const { authorization } = req.headers;
     const token = authorization?.split(' ')[1];
 
-    if (token === null) return res.status(403).send({ auth: false, message: 'Authorization failed3' });
+    if (token === null) return res.status(403).send({ auth: false, message: 'Authorization failed' });
     try {
         const decodedToken = await <any>jwt.verify(token ?? '', secret ?? '');
         const userId = decodedToken.id
         const user = await User.findByPk(userId);
 
-        if (user === null) return res.status(403).send({ auth: false, message: 'Authorization failed2' });
+        if (user === null) return res.status(403).send({ auth: false, message: 'Authorization failed' });
         const lastLogout = user.toJSON().lastLogout
 
-        if (lastLogout !== null && lastLogout > decodedToken.iat) return res.status(403).send({ auth: false, message: 'Authorization failed4' });
+        if (lastLogout !== null && lastLogout > decodedToken.iat) return res.status(403).send({ auth: false, message: 'Authorization failed' });
 
         req.decodedToken = decodedToken;
         next();
 
     } catch (err) {
-        return res.status(403).send({ auth: false, message: 'Authorization failed1' });
+        return res.status(403).send({ auth: false, message: 'Authorization failed' });
     }
 
 }

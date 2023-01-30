@@ -6,17 +6,20 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useAppDispatch } from '../../store/hooks';
 import { fetchUsers } from '../../store/slices/usersSlice';
 
+import io from 'socket.io-client';
+
+
 import LeaveButton from './LeaveButton';
 import Search from './sidebar/Search';
 import UsersList from './sidebar/UsersList';
 import MessagesList from './window/MessagesList';
 import InputBox from './window/InputBox';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import { setConnection } from './socketClient';
 
 type ChatProps = {
 
 }
-
 
 const ChatLayout = ({ }: ChatProps) => {
     const [error, setError] = useState(false);
@@ -41,8 +44,10 @@ const ChatLayout = ({ }: ChatProps) => {
                     setError(true);
                     notify(`${err.message}: cannot fetch users list.`)
                 });
+            setConnection(user.token);
         }
-    }, [dispatch, user?.token])
+
+    }, [user?.token])
 
     return (
         <section>

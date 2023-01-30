@@ -1,3 +1,4 @@
+import { disconnect } from '../components/chat/socketClient'
 import { useContext } from 'react';
 import { AuthContext } from "../context/auth-context";
 import useLocalStorage from './useLocalStorage';
@@ -21,6 +22,7 @@ export const useAuth = () => {
     }
 
     const logOut = () => {
+        disconnect();
         setUser(null);
         removeItem('user');
     }
