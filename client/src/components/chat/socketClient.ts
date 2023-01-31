@@ -8,7 +8,7 @@ export const setConnection = (token: string) => {
         transportOptions: {
             polling: {
                 extraHeaders: {
-                    token,
+                    token: `Bearer ${token}`
                 }
             }
         }

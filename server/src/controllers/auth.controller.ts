@@ -55,9 +55,8 @@ export const login = async (req: Request, res: Response): Promise<Response<strin
     const exp = (new Date()).setHours(iat.getHours() + hours);
     const token = jwt.sign({
         id: user._id,
-        iat: iat.getTime(),
-        exp: exp
-    }, JWT.secret ?? '')
+        username: user.username
+    }, JWT.secret ?? '', { expiresIn: `${hours}h` })
 
     user.lastLogin = new Date();
     await user.save();

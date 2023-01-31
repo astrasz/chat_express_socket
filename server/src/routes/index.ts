@@ -17,7 +17,7 @@ export const routes = (server: any, io: Server) => {
     server.get('/api/users', usersController.getUsers);
     server.get('/api/conversations', conversationsController.getConversations);
     server.post('/api/conversations', conversationsController.createConversation)
-
-
+    server.get('/api/conversations/:id/messages', conversationsController.getMessagesByConversationId)
+    server.post('/api/conversations/:id/messages', conversationsController.addMessageToConversation)
 
 }

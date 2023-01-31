@@ -1,6 +1,8 @@
 import React from 'react'
 import { createConversation, findConversationByParticipants } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useAppDispatch } from '../../../store/hooks';
+import { setCurrentConversation, setPartner } from '../../../store/slices/currentConversationSlice';
 import { joinRoom } from '../socketClient';
 import { UserType } from './UsersList';
 
@@ -10,13 +12,17 @@ import { UserType } from './UsersList';
 const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType) => {
 
     const { user } = useAuthContext()
+    const dispatch = useAppDispatch()
 
     const handleClick = async () => {
+        console.log('click');
         const findResponse = await findConversationByParticipants(user?.token ?? '', _id ?? '');
         let conversation = await findResponse.json();
 
         if (Array.isArray(conversation) && conversation.length === 0) {
-            const createResponse = await createConversation(user?.token ?? '', JSON.stringify({ partnerId: _id }));
+            const createResponse = await createConversation(
+                user?.token ?? '',
+                JSON.stringify({ partnerId: _id }));
             conversation = await createResponse.json();
         }
 
@@ -25,6 +31,13 @@ const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType)
             conversationId = conversation[0]._id
         }
         joinRoom(conversationId, _id ?? '');
+        dispatch(setCurrentConversation(conversationId));
+        console.log('id', _id);
+        console.log('username', username);
+        dispatch(setPartner({
+            id: _id ?? '',
+            username
+        }))
     }
 
     return (

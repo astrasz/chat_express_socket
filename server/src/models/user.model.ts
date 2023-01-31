@@ -12,6 +12,7 @@ interface UserAttributes {
   password: string;
   lastLogout: Date | null;
   lastLogin: Date | null;
+  avatar: string | null;
 }
 
 type UserCreationAttributes = Optional<UserAttributes, '_id'>
@@ -54,6 +55,12 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
 
   @Column(DataType.DATE)
   declare lastLogin: Date | null
+
+  @Column({
+    type: DataType.STRING,
+    defaultValue: ''
+  })
+  declare avatar: string;
 
   @Column(DataType.VIRTUAL)
   get isActive() {
