@@ -1,5 +1,5 @@
 import { Optional } from 'sequelize';
-import { Table, Column, Model, HasMany, BelongsTo, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Model, BelongsTo, ForeignKey } from 'sequelize-typescript';
 import { DataType } from 'sequelize-typescript/dist/sequelize/data-type/data-type';
 import { Conversation } from './conversation.model';
 import { User } from './user.model';

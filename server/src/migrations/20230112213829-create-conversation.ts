@@ -22,7 +22,6 @@ module.exports = {
       },
       deletedAt: Sequelize.DATE,
     }, {
-      // logging: console.log,
     });
   },
   async down(queryInterface, Sequelize) {

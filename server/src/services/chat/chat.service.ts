@@ -12,13 +12,14 @@ export const chat = (io: any) => {
 
             clients[currentUser.id] = socket;
 
-            console.log('sockets', Object.keys(clients).length);
+            console.log('clients', Object.keys(clients).length);
             console.log(`Client connected: ${socket.id}`);
             console.log(`Client userId ${currentUser.id}`)
 
 
             socket.on('disconnectUser', (socket: any) => {
                 delete clients[currentUser.id]
+                console.log('clients', Object.keys(clients).length);
                 console.log('user disconnected - custom');
             })
 
@@ -35,7 +36,6 @@ export const chat = (io: any) => {
             })
 
             socket.on('message', (data: any) => {
-                console.log('message', data);
                 socket.to(data.conversationId).emit('getMessage', data)
             })
 

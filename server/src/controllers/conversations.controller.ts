@@ -1,7 +1,9 @@
 import { Response } from "express";
 import { Conversation } from "../models/conversation.model";
 import { User } from "../models/user.model";
+import { Message } from "../models/message.model"
 import { VerifiedRequest } from "../utils/checkToken";
+import sequelize from "sequelize";
 
 
 const conversationsFilters = (partnerId: any) => {
@@ -97,7 +99,7 @@ export const getMessagesByConversationId = async (req: VerifiedRequest, res: Res
 
 
         const messages = await conversation.$get('messages', {
-            include: { model: User, as: 'sender', attributes: ['_id', 'avatar'] }
+            include: { model: User, as: 'sender', attributes: ['_id', 'avatar'] }, order: [['createdAt', 'ASC']]
         });
 
         const mappedMessages = messages.map(message => {
@@ -105,7 +107,7 @@ export const getMessagesByConversationId = async (req: VerifiedRequest, res: Res
                 avatar: message.sender.avatar,
                 text: message.content,
                 date: message.createdAt,
-                senderId: message.sender.id
+                senderId: message.sender._id
             }
         })
 
@@ -115,6 +117,26 @@ export const getMessagesByConversationId = async (req: VerifiedRequest, res: Res
     }
 }
 
-export const addMessageToConversation = async () => {
+export const addMessageToConversation = async (req: VerifiedRequest, res: Response) => {
+    try {
+        const senderId = req.decodedToken.id
+        const { content } = req.body;
+        const conversationId = req.params.id;
+        const message = await Message.create({
+            content,
+            senderId,
+            conversationId,
+        });
 
+        const sender = await User.findByPk(senderId);
+        const conversation = await Conversation.findByPk(conversationId);
+
+        sender?.$add('messages', message);
+        conversation?.$add('messages', message);
+
+        return res.status(201).json(message);
+
+    } catch (err) {
+        console.log(err);
+    }
 }
