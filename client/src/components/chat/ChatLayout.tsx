@@ -29,8 +29,6 @@ const ChatLayout = ({ }: ChatProps) => {
     const { logOut } = useAuth()
     const toastId = Math.random()
 
-
-
     const notify = (message: string) => {
         if (!toast.isActive(toastId)) {
             toast(message, {

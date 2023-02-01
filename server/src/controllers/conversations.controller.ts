@@ -3,7 +3,6 @@ import { Conversation } from "../models/conversation.model";
 import { User } from "../models/user.model";
 import { Message } from "../models/message.model"
 import { VerifiedRequest } from "../utils/checkToken";
-import sequelize from "sequelize";
 
 
 const conversationsFilters = (partnerId: any) => {
@@ -78,8 +77,6 @@ export const createConversation = async (req: VerifiedRequest, res: Response) =>
     } catch (err) {
         console.log(err);
     }
-
-
 }
 
 export const getMessagesByConversationId = async (req: VerifiedRequest, res: Response) => {
@@ -96,7 +93,6 @@ export const getMessagesByConversationId = async (req: VerifiedRequest, res: Res
         if (!conversation) {
             return res.status(400).json({ message: 'Conversation cannot be found' });
         }
-
 
         const messages = await conversation.$get('messages', {
             include: { model: User, as: 'sender', attributes: ['_id', 'avatar'] }, order: [['createdAt', 'ASC']]

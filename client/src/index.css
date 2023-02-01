@@ -119,6 +119,10 @@ div.chat-window__input {
     width: 100%;
 }
 
+p.time {
+    font-size: 0.8rem;
+}
+
 img.avatar {
     width: 40px;
     height: 100%
