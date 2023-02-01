@@ -1,8 +1,8 @@
-import React from 'react'
-import { createConversation, findConversationByParticipants } from '../../../api';
+import React, { useState } from 'react'
+import { createConversation, findConversationByParticipants, getMessagesByConversationId } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useAppDispatch } from '../../../store/hooks';
-import { setCurrentConversation, setPartner } from '../../../store/slices/currentConversationSlice';
+import { setCurrentConversation, setMessages, setPartner } from '../../../store/slices/currentConversationSlice';
 import { joinRoom } from '../socketClient';
 import { UserType } from './UsersList';
 
@@ -11,34 +11,44 @@ import { UserType } from './UsersList';
 
 const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType) => {
 
+    const [error, setError] = useState('');
     const { user } = useAuthContext()
     const dispatch = useAppDispatch()
 
     const handleClick = async () => {
-        console.log('click');
-        const findResponse = await findConversationByParticipants(user?.token ?? '', _id ?? '');
-        let conversation = await findResponse.json();
+        try {
+            const findResponse = await findConversationByParticipants(user?.token ?? '', _id ?? '');
+            let conversation = await findResponse.json();
 
-        if (Array.isArray(conversation) && conversation.length === 0) {
-            const createResponse = await createConversation(
-                user?.token ?? '',
-                JSON.stringify({ partnerId: _id }));
-            conversation = await createResponse.json();
+            if (Array.isArray(conversation) && conversation.length === 0) {
+                const createResponse = await createConversation(
+                    user?.token ?? '',
+                    JSON.stringify({ partnerId: _id }));
+                conversation = await createResponse.json();
+            }
+
+            let conversationId = conversation._id;
+            if (Array.isArray(conversation)) {
+                conversationId = conversation[0]._id
+            }
+
+            const messagesResponse = await getMessagesByConversationId(user?.token ?? '', conversationId);
+            const messages = await messagesResponse.json();
+
+            joinRoom(conversationId, _id ?? '');
+            dispatch(setCurrentConversation(conversationId));
+            dispatch(setPartner({
+                id: _id ?? '',
+                username
+            }))
+            dispatch(setMessages(messages));
+        } catch (err: any) {
+            setError(err.message);
+            console.log('Error: ' + err.message);
         }
 
-        let conversationId = conversation._id;
-        if (Array.isArray(conversation)) {
-            conversationId = conversation[0]._id
-        }
-        joinRoom(conversationId, _id ?? '');
-        dispatch(setCurrentConversation(conversationId));
-        console.log('id', _id);
-        console.log('username', username);
-        dispatch(setPartner({
-            id: _id ?? '',
-            username
-        }))
     }
+
 
     return (
         <li className="p-1 mb-3 list-group-item border-bottom-1" onClick={handleClick}>

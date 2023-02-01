@@ -21,7 +21,7 @@ const Message = ({ avatar, text, date, senderId }: MessageType) => {
                     alt="avatar 1" className='avatar' />
             )}
             <div>
-                <p className={"small p-2 ms-3 mb-1 rounded-3 " + currentUser && bgColor + " " + currentUser && color}>
+                <p className={"small p-2 ms-3 mb-1 rounded-3 " + (currentUser && (bgColor + " " + color))}>
                     {text}</p>
                 <p className="small ms-3 mb-3 rounded-3 text-muted float-end">{date}</p>
             </div>

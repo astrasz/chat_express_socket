@@ -7,20 +7,24 @@ export interface MessageType {
     senderId: string
 }
 
+export interface MessagesType {
+    messages: Array<MessageType | null>
+}
+
 interface PartnerType {
-    id: string,
-    username: string
+    id: string | null,
+    username: string | null
 }
 
 interface CurrentConversationState {
     conversationId: string | null,
-    partner: PartnerType | null,
+    partner: PartnerType,
     messages: Array<MessageType | null>
 }
 
 const initialCurrentConversationState: CurrentConversationState = {
     conversationId: null,
-    partner: null,
+    partner: { id: null, username: null },
     messages: []
 }
 
@@ -36,12 +40,16 @@ export const currentConversationSlice = createSlice({
         addMessage: (state, action: PayloadAction<MessageType>) => {
             state.messages.push(action.payload);
         },
+        setMessages: (state, action: PayloadAction<Array<MessageType>>) => {
+            state.messages = action.payload
+        },
         setPartner: (state, action: PayloadAction<PartnerType>) => {
-            state.partner = action.payload;
+            state.partner.id = action.payload.id;
+            state.partner.username = action.payload.username
         }
     }
 })
 
 
-export const { setCurrentConversation, addMessage, setPartner } = currentConversationSlice.actions;
+export const { setCurrentConversation, addMessage, setPartner, setMessages } = currentConversationSlice.actions;
 export default currentConversationSlice.reducer;

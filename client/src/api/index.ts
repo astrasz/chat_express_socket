@@ -16,9 +16,12 @@ export const signin = async (credentials: any) => {
     })
 }
 
-export const logout = async () => {
-    return await fetch('/api/login', {
+export const logout = async (token: string) => {
+    return await fetch('/api/logout', {
         method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
     })
 }
 
@@ -44,6 +47,26 @@ export const createConversation = async (token: string, partnerId: any) => {
     return await fetch('/api/conversations', {
         method: 'POST',
         body: partnerId,
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+export const getMessagesByConversationId = async (token: string, conversationId: string) => {
+    return await fetch(`/api/conversations/${conversationId}/messages`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+}
+
+export const addMessageToConversation = async (token: string, conversationId: string, content: string) => {
+    return await fetch(`/api/conversations/${conversationId}/messages`, {
+        method: 'POST',
+        body: content,
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

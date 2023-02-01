@@ -6,8 +6,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useAppDispatch } from '../../store/hooks';
 import { fetchUsers } from '../../store/slices/usersSlice';
 
-import io from 'socket.io-client';
-
 
 import LeaveButton from './LeaveButton';
 import Search from './sidebar/Search';
@@ -15,7 +13,9 @@ import UsersList from './sidebar/UsersList';
 import MessagesList from './window/MessagesList';
 import InputBox from './window/InputBox';
 import { useAuthContext } from '../../hooks/useAuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import { setConnection } from './socketClient';
+import { Socket } from 'socket.io-client';
 
 type ChatProps = {
 
@@ -23,9 +23,12 @@ type ChatProps = {
 
 const ChatLayout = ({ }: ChatProps) => {
     const [error, setError] = useState(false);
+    const [socket, setSocket] = useState(null);
     const dispatch = useAppDispatch();
     const { user } = useAuthContext();
+    const { logOut } = useAuth()
     const toastId = Math.random()
+
 
 
     const notify = (message: string) => {
@@ -42,9 +45,13 @@ const ChatLayout = ({ }: ChatProps) => {
                 .unwrap()
                 .catch((err: any) => {
                     setError(true);
+                    if (err.auth === false) {
+                        logOut()
+                    }
                     notify(`${err.message}: cannot fetch users list.`)
                 });
-            setConnection(user.token);
+            const socketInstance = setConnection(user.token);
+            setSocket(socketInstance);
         }
 
     }, [user?.token])
@@ -82,7 +89,7 @@ const ChatLayout = ({ }: ChatProps) => {
                                     </div>
 
                                     <div className="col-6 col-md-7 col-lg-8 col-xl-9 chat-window">
-                                        <MessagesList />
+                                        <MessagesList socket={socket} />
                                         <InputBox />
                                     </div>
                                 </div>

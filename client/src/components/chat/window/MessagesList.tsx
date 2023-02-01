@@ -1,38 +1,51 @@
-import React, { useState, useEffect } from 'react';
+import { send } from 'process';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
-import { MessageType } from '../../../store/slices/currentConversationSlice';
+import { addMessage, MessageType } from '../../../store/slices/currentConversationSlice';
 import { RootState } from '../../../store/store';
 
 import Message from './Message';
 
-const MessagesList = () => {
-    const [currentConversation, setCurrentConversation] = useState(null);
-    const [messages, setMessages] = useState<Array<MessageType | null>>([]);
-    const [partnersUsername, setPartnersUsername] = useState<string | null>(null);
+const MessagesList = ({ socket }: any) => {
 
-    const conversation = useSelector((state: RootState) => state.currentConversation.conversationId)
-    const messagesArr = useSelector((state: RootState) => state.currentConversation.messages
-    )
-    const username = useSelector((state: RootState) => state.currentConversation.partner?.username)
+    const messagesEndRef = useRef<null | HTMLDivElement>(null);
+    const dispatch = useDispatch();
+    const currentConversation = useSelector((state: RootState) => state.currentConversation.conversationId);
+    const messages = useSelector((state: RootState) => state.currentConversation.messages
+    );
+    const partnersUsername = useSelector((state: RootState) => state.currentConversation.partner.username);
 
     useEffect(() => {
-        setPartnersUsername(username ?? null);
-    }, [partnersUsername])
+        if (socket) {
+            socket.on('getMessage', (data: any) => {
+                const { avatar, time, senderId, content } = data;
+                dispatch(addMessage({ avatar, date: time, senderId, text: content }));
+            })
+        }
+    }, [socket]);
 
+    const scrollToBottom = () => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
+        }
+    }
 
+    useEffect(() => {
+        scrollToBottom()
+    }, [messages]);
 
-
-    console.log('partner', partnersUsername);
 
     return (
-        <>
+        <div className='chat-window__messages'>
             {partnersUsername && (
-                <h4>`Chat with ${partnersUsername}`</h4>
+                <h5>Chat with {partnersUsername}</h5>
             )}
             <ul className="pt-3 pe-3 chat-window__messages" data-mdb-perfect-scrollbar="true">
 
-                {currentConversation && messages.length && messages.map(message => (
+                {currentConversation && !!messages.length && messages.map((message, index) => (
                     <Message
+                        key={index}
                         avatar='https://mdbcdn.b-cdn.net/img/new/avatars/2.webp'
                         text={message?.text ?? ''}
                         date={message?.date ?? ''}
@@ -40,24 +53,9 @@ const MessagesList = () => {
 
                     />
                 ))}
-                {/* <Message
-                avatar='https://mdbcdn.b-cdn.net/img/new/avatars/2.webp'
-                text='Hello there!'
-                date='12:00 PM | Aug 13'
-                bgColor=''
-                color=''
-                currentUser={false}
-            />
-            <Message
-                avatar='https://mdbcdn.b-cdn.net/img/new/avatars/6.webp'
-                text='Lorem ipsum...'
-                date='12:10 PM | Aug 13'
-                bgColor='bg-primary'
-                color='text-white'
-                currentUser={true}
-            /> */}
+                <div ref={messagesEndRef} />
             </ul>
-        </>
+        </div>
     )
 }
 

@@ -91,13 +91,26 @@ div.chat-navigation__users p.small {
 
 .chat-navigation::-webkit-scrollbar {
     display: none;
-    background-color: #dc3545;
 }
 
 
 div.chat-window {
     position: relative;
     overflow-x: hidden;
+}
+
+div.chat-window__messages {
+    width: 100%;
+    height: 100%;
+}
+
+div.chat-window__messages>ul {
+    height: 80%;
+    overflow-y: scroll;
+}
+
+div.chat-window__messages>ul::-webkit-scrollbar {
+    display: none;
 }
 
 div.chat-window__input {
