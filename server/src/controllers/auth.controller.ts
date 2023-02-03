@@ -7,7 +7,7 @@ import { VerifiedRequest } from "../utils/checkToken";
 
 export const signup = async (req: Request, res: Response): Promise<Response<string>> => {
 
-    const { email, username, password, repeatedPassword } = req.body;
+    const { email, username, password, repeatedPassword, avatar } = req.body;
 
     if (username === null) return res.status(400).json({ message: 'Username is required' });
 
@@ -23,9 +23,10 @@ export const signup = async (req: Request, res: Response): Promise<Response<stri
             email,
             username,
             password: hashedPassword,
+            avatar
         });
 
-        return res.status(200).json({ success: true, message: `User ${user.toJSON().email} has been created successfully` });
+        return res.status(200).json({ success: true, message: `User ${user.toJSON().username} has been created successfully` });
 
     } catch (err) {
         console.log('Err: ', err)
@@ -49,13 +50,11 @@ export const login = async (req: Request, res: Response): Promise<Response<strin
 
     const expConfig = +(JWT.exp ?? 18000000)
 
-    const hours = expConfig / 1000 / 60 / 60
-    const iat = new Date();
-
-    const exp = (new Date()).setHours(iat.getHours() + hours);
+    const hours = expConfig / 1000 / 60 / 60;
     const token = jwt.sign({
         id: user._id,
-        username: user.username
+        username: user.username,
+        avatar: user.avatar
     }, JWT.secret ?? '', { expiresIn: `${hours}h` })
 
     user.lastLogin = new Date();
@@ -66,6 +65,7 @@ export const login = async (req: Request, res: Response): Promise<Response<strin
         data: {
             id: user._id,
             email: user.email,
+            avatar: user.avatar,
             token
         }
     });

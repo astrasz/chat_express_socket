@@ -5,6 +5,7 @@ import App from './App';
 import { AuthContextProvider } from './context/auth-context';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
+import { SocketContextProvider } from './context/socket-context';
 
 
 const root = ReactDOM.createRoot(
@@ -13,9 +14,11 @@ const root = ReactDOM.createRoot(
 root.render(
   // <React.StrictMode>
   <AuthContextProvider>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <SocketContextProvider>
+      <Provider store={store}>
+        <App />
+      </Provider>
+    </SocketContextProvider>
   </AuthContextProvider>
   // </React.StrictMode >
 );

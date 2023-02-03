@@ -12,7 +12,7 @@ const conversationsFilters = (partnerId: any) => {
         filters = {
             include: [{
                 model: User,
-                attributes: ['_id', 'username'],
+                attributes: ['_id', 'username', 'avatar'],
                 where: {
                     _id: partnerId
                 }, required: true

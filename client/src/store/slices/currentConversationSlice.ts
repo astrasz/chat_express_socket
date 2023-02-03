@@ -13,7 +13,8 @@ export interface MessagesType {
 
 interface PartnerType {
     id: string | null,
-    username: string | null
+    username: string | null,
+    avatar: string | null
 }
 
 interface CurrentConversationState {
@@ -24,7 +25,7 @@ interface CurrentConversationState {
 
 const initialCurrentConversationState: CurrentConversationState = {
     conversationId: null,
-    partner: { id: null, username: null },
+    partner: { id: null, username: null, avatar: null },
     messages: []
 }
 
@@ -45,7 +46,8 @@ export const currentConversationSlice = createSlice({
         },
         setPartner: (state, action: PayloadAction<PartnerType>) => {
             state.partner.id = action.payload.id;
-            state.partner.username = action.payload.username
+            state.partner.username = action.payload.username;
+            state.partner.avatar = action.payload.avatar;
         }
     }
 })

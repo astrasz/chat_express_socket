@@ -123,6 +123,27 @@ p.time {
     font-size: 0.8rem;
 }
 
+div.avatars-option {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    overflow-x: hidden;
+}
+
+div.avatars-option p {
+    margin-bottom: 0;
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateY(-50%);
+}
+
+div.avatars-option img {
+    width: 60px;
+}
+
 img.avatar {
     width: 40px;
     height: 100%

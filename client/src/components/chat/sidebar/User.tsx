@@ -1,19 +1,16 @@
 import React, { useState } from 'react'
 import { createConversation, findConversationByParticipants, getMessagesByConversationId } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
+import { useSocketContext } from '../../../hooks/useSocketContext';
 import { useAppDispatch } from '../../../store/hooks';
 import { setCurrentConversation, setMessages, setPartner } from '../../../store/slices/currentConversationSlice';
-import { joinRoom } from '../socketClient';
 import { UserType } from './UsersList';
 
-
-
-
 const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType) => {
-
+    const { socket } = useSocketContext();
     const [error, setError] = useState('');
-    const { user } = useAuthContext()
-    const dispatch = useAppDispatch()
+    const { user } = useAuthContext();
+    const dispatch = useAppDispatch();
 
     const handleClick = async () => {
         try {
@@ -35,20 +32,20 @@ const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType)
             const messagesResponse = await getMessagesByConversationId(user?.token ?? '', conversationId);
             const messages = await messagesResponse.json();
 
-            joinRoom(conversationId, _id ?? '');
+            socket.emit('joinRoom', { conversationId, partnerId: _id });
+
             dispatch(setCurrentConversation(conversationId));
             dispatch(setPartner({
                 id: _id ?? '',
-                username
+                username,
+                avatar,
             }))
             dispatch(setMessages(messages));
         } catch (err: any) {
             setError(err.message);
             console.log('Error: ' + err.message);
         }
-
     }
-
 
     return (
         <li className="p-1 mb-3 list-group-item border-bottom-1" onClick={handleClick}>

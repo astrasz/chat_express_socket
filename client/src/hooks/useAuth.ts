@@ -1,16 +1,19 @@
-import { disconnect } from '../components/chat/socketClient'
+// import { disconnect } from '../components/chat/socketClient'
 import { useContext } from 'react';
 import { AuthContext } from "../context/auth-context";
 import useLocalStorage from './useLocalStorage';
+import { useSocketContext } from './useSocketContext';
 
 export interface UserInterface {
     id: string,
     email: string,
+    avatar: string,
     token: string
 }
 
 export const useAuth = () => {
 
+    const { socket } = useSocketContext();
     const { setUser } = useContext(AuthContext)
     const { setItem, removeItem } = useLocalStorage();
 
@@ -22,7 +25,7 @@ export const useAuth = () => {
     }
 
     const logOut = () => {
-        disconnect();
+        socket.emit('disconnectUser')
         setUser(null);
         removeItem('user');
     }

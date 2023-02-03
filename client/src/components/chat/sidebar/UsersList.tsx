@@ -27,7 +27,7 @@ const UsersList = () => {
                         username={user.username}
                         lastMessage={'Please....'}
                         lastMessageDate={'Just now'}
-                        avatar={'https://mdbcdn.b-cdn.net/img/new/avatars/6.webp'}
+                        avatar={user.avatar}
                     />
                 ))}
             </ul>

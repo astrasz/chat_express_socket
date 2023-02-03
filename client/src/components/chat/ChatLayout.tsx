@@ -14,8 +14,8 @@ import MessagesList from './window/MessagesList';
 import InputBox from './window/InputBox';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useAuth } from '../../hooks/useAuth';
-import { setConnection } from './socketClient';
-import { Socket } from 'socket.io-client';
+// import { setConnection } from './socketClient';
+// import { Socket } from 'socket.io-client';
 
 type ChatProps = {
 
@@ -23,7 +23,7 @@ type ChatProps = {
 
 const ChatLayout = ({ }: ChatProps) => {
     const [error, setError] = useState(false);
-    const [socket, setSocket] = useState(null);
+    // const [socket, setSocket] = useState(null);
     const dispatch = useAppDispatch();
     const { user } = useAuthContext();
     const { logOut } = useAuth()
@@ -48,8 +48,9 @@ const ChatLayout = ({ }: ChatProps) => {
                     }
                     notify(`${err.message}: cannot fetch users list.`)
                 });
-            const socketInstance = setConnection(user.token);
-            setSocket(socketInstance);
+            // const socketInstance = setConnection(user?.token ?? '');
+            // setSocket(socketInstance);
+
         }
 
     }, [user?.token])
@@ -87,7 +88,8 @@ const ChatLayout = ({ }: ChatProps) => {
                                     </div>
 
                                     <div className="col-6 col-md-7 col-lg-8 col-xl-9 chat-window">
-                                        <MessagesList socket={socket} />
+                                        {/* <MessagesList socket={socket} /> */}
+                                        <MessagesList />
                                         <InputBox />
                                     </div>
                                 </div>

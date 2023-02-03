@@ -1,21 +1,31 @@
-import React, { useState } from 'react'
-import { redirect, useNavigate } from 'react-router-dom';
+import React, { useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import Select, { Options } from 'react-select';
+import { SingleValue } from 'react-select/dist/declarations/src';
 import { signup } from '../api';
 
 interface ErrorType {
     message: string
 }
 
+interface AvatarType {
+    value: string,
+    label: string,
+    image: string
+}
+
 
 const Signup = () => {
 
     const navigate = useNavigate();
-
+    const [selectedAvatar, setSelectedAvatar] = useState<AvatarType | null>(null)
+    const [avatarImage, setAvatarImage] = useState<string | null>(null)
     const [username, setUsername] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [repeatedPassword, setRepeatedPassword] = useState<string>('');
     const [errors, setErrors] = useState<Array<ErrorType>>([]);
+
 
 
     const handleSubmit = async (e: any) => {
@@ -46,7 +56,8 @@ const Signup = () => {
                 username,
                 email,
                 password,
-                repeatedPassword
+                repeatedPassword,
+                avatar: selectedAvatar?.image
             }));
 
             if (response.ok) {
@@ -58,6 +69,67 @@ const Signup = () => {
         }
     }
 
+
+    const changeAvatar = (avatar: SingleValue<AvatarType | null>) => {
+        setSelectedAvatar(avatar);
+    }
+
+    const generateOptions = () => {
+        const avatars: AvatarType[] = [];
+
+        Array.from({ length: 25 }, (x, i) => {
+            const avatar = {
+                value: `https://mdbcdn.b-cdn.net/img/new/avatars/${i + 1}.webp`,
+                label: `Avatar ${i + 1}`,
+                image: `https://mdbcdn.b-cdn.net/img/new/avatars/${i + 1}.webp`
+            }
+
+            avatars.push(avatar);
+        })
+        return avatars;
+    }
+
+    const stylesForSelect = {
+        option: (baseStyles: any) => ({
+            ...baseStyles,
+            backgroundColor: '#fff',
+            '&:hover': { backgroundColor: '#fff', boxShadow: '0 0 10px 100px #0D70B6 inset', color: '#fff', cursor: 'pointer' }
+
+        }),
+        menuList: (baseStyles: any) => ({
+            ...baseStyles,
+            '::-webkit-scrollbar': { display: 'none' }
+        }),
+        menu: (baseStyles: any) => ({
+            ...baseStyles,
+            backgroundColor: '#fff',
+            marginBottom: '2rem',
+        }),
+
+    }
+
+    const SelectAvatar = () => {
+        const avatars = generateOptions();
+        return (
+            <Select
+                styles={stylesForSelect}
+                isClearable
+                hideSelectedOptions
+                value={selectedAvatar}
+                placeholder='Select avatar'
+                options={avatars}
+                onChange={(avatar: SingleValue<AvatarType | null>) => changeAvatar(avatar)}
+                formatOptionLabel={(avatar: AvatarType) => (
+                    <div className='avatars-option'>
+                        {avatar.image && <img src={avatar.image} alt={avatar.label} />}
+                        <p>{avatar.label}</p>
+                    </div>
+                )}
+
+
+            />
+        )
+    }
 
     return (
         <div className='container d-flex align-items-center justify-content-center'>
@@ -114,6 +186,9 @@ const Signup = () => {
 
                     />
                 </div>
+                <div className="mb-3">
+                    <SelectAvatar />
+                </div>
                 <div className="d-grid">
                     <button type="submit" className="btn btn-primary mt-3">
                         Sign Up
@@ -122,7 +197,7 @@ const Signup = () => {
                 <p className='mt-3'>
                     Already registered? <a href="/login">sign in</a>
                 </p>
-            </form>
+            </form >
 
         </div >
     )
