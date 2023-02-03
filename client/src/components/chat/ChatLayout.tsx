@@ -23,7 +23,7 @@ type ChatProps = {
 
 const ChatLayout = ({ }: ChatProps) => {
     const [error, setError] = useState(false);
-    // const [socket, setSocket] = useState(null);
+    const [searchText, setSearchText] = useState<string>('')
     const dispatch = useAppDispatch();
     const { user } = useAuthContext();
     const { logOut } = useAuth()
@@ -48,12 +48,13 @@ const ChatLayout = ({ }: ChatProps) => {
                     }
                     notify(`${err.message}: cannot fetch users list.`)
                 });
-            // const socketInstance = setConnection(user?.token ?? '');
-            // setSocket(socketInstance);
-
         }
 
     }, [user?.token])
+
+    const handleSearch = (searchText: string) => {
+        setSearchText(searchText);
+    }
 
     return (
         <section>
@@ -82,8 +83,12 @@ const ChatLayout = ({ }: ChatProps) => {
                                 <div className="row card-body__chat flex-xs-row">
                                     <div className="col-6 col-md-5 col-lg-4 col-xl-3 mb-4">
                                         <div className="p-3 chat-navigation">
-                                            <Search />
-                                            {!error && <UsersList />}
+                                            <Search
+                                                handleSearch={handleSearch}
+                                            />
+                                            {!error && <UsersList
+                                                searching={searchText}
+                                            />}
                                         </div>
                                     </div>
 

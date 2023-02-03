@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { getUsers } from "../../api";
 
 
-interface UsersState {
+export interface UsersState {
     [x: string]: any;
     users: Array<Object | null>
 }
