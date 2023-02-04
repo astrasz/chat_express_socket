@@ -14,7 +14,7 @@ const Message = ({ avatar, text, date, senderId }: MessageType) => {
 
     const formatTime = (time: Date) => {
         if (differenceInMinutes(new Date(), time) < 60) {
-            return formatDistanceToNow(new Date(date), { addSuffix: true })
+            return formatDistanceToNow(new Date(time), { addSuffix: true })
         } else if (isSameDay(time, new Date())) {
             return format(time, 'HH:mm');
         } else {

@@ -26,10 +26,8 @@ const conversationsFilters = (partnerId: any) => {
 
 export const getConversations = async (req: VerifiedRequest, res: Response) => {
     try {
-
         const userId = req.decodedToken.id;
         const partnerId = req.query.partner;
-
         if (userId === partnerId) {
             return res.status(400).json('Conversation should be established beetwen diffrent users')
         }
@@ -144,8 +142,8 @@ export const addMessageToConversation = async (req: VerifiedRequest, res: Respon
         const sender = await User.findByPk(senderId);
         const conversation = await Conversation.findByPk(conversationId);
 
-        sender?.$add('messages', message);
-        conversation?.$add('messages', message);
+        await sender?.$add('messages', message);
+        await conversation?.$add('messages', message);
 
         return res.status(201).json(message);
 

@@ -5,13 +5,13 @@ import User from './User'
 import { useAppSelector } from '../../../store/hooks'
 import { UsersState } from '../../../store/slices/usersSlice'
 
-
-
 export interface UserType {
     _id?: string | null,
     username: string,
     lastMessage: string,
     lastMessageDate: string,
+    unread: number,
+    conversationId: string
     avatar: string
 }
 
@@ -36,11 +36,14 @@ const UsersList = (props: { searching: string }) => {
                         key={user._id}
                         _id={user._id}
                         username={user.username}
-                        lastMessage={'Please....'}
-                        lastMessageDate={'Just now'}
+                        lastMessage={user.lastMessage}
+                        lastMessageDate={user.lastMessageDate}
+                        unread={user.unread}
                         avatar={user.avatar}
+                        conversationId={user.conversationId}
                     />
-                ))}
+                )
+                )}
             </ul>
         </div>
     )

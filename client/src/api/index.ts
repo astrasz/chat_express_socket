@@ -66,7 +66,7 @@ export const getMessagesByConversationId = async (token: string, conversationId:
 export const addMessageToConversation = async (token: string, conversationId: string, content: string) => {
     return await fetch(`/api/conversations/${conversationId}/messages`, {
         method: 'POST',
-        body: content,
+        body: JSON.stringify({ content }),
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

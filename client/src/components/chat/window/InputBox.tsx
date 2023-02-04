@@ -5,6 +5,7 @@ import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useSocketContext } from '../../../hooks/useSocketContext';
 import { useAppDispatch } from '../../../store/hooks';
 import { addMessage } from '../../../store/slices/currentConversationSlice';
+import { updateLastMessage } from '../../../store/slices/usersSlice';
 import { RootState } from '../../../store/store';
 
 const InputBox = () => {
@@ -22,7 +23,7 @@ const InputBox = () => {
         socket.emit('message', { avatar: user?.avatar, conversationId: currentConversationId, senderId: user?.id, content, time: date });
 
         dispatch(addMessage({ avatar: user?.avatar ?? '', text: content, date, senderId: user?.id ?? '' }));
-
+        dispatch(updateLastMessage({ conversationId: currentConversationId, lastMessage: content, lastMessageDate: date }));
         setContent('');
     }
 

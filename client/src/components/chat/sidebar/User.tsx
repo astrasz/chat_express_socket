@@ -1,12 +1,14 @@
+import { differenceInMinutes, formatDistanceToNow, isSameDay, format } from 'date-fns';
 import React, { useState } from 'react'
 import { createConversation, findConversationByParticipants, getMessagesByConversationId, updateParticipation } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useSocketContext } from '../../../hooks/useSocketContext';
 import { useAppDispatch } from '../../../store/hooks';
 import { setCurrentConversation, setMessages, setPartner } from '../../../store/slices/currentConversationSlice';
+import { clearUnread } from '../../../store/slices/usersSlice';
 import { UserType } from './UsersList';
 
-const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType) => {
+const User = ({ _id, username, lastMessage, lastMessageDate, unread, avatar }: UserType) => {
     const { socket } = useSocketContext();
     const [error, setError] = useState('');
     const { user } = useAuthContext();
@@ -34,7 +36,6 @@ const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType)
             if (fetchedConversation.Participation.lastChecked !== lastChecked) {
                 await updateParticipation(user?.token ?? '', participationId, JSON.stringify({ lastChecked }));
             }
-
             const messagesResponse = await getMessagesByConversationId(user?.token ?? '', conversationId);
             const messages = await messagesResponse.json();
 
@@ -47,9 +48,18 @@ const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType)
                 avatar,
             }))
             dispatch(setMessages(messages));
+            dispatch(clearUnread(conversationId));
         } catch (err: any) {
             setError(err.message);
             console.log('Error: ' + err.message);
+        }
+    }
+
+    const formatTime = (time: Date) => {
+        if (isSameDay(time, new Date())) {
+            return format(time, 'HH:mm');
+        } else {
+            return time.toLocaleString();
         }
     }
 
@@ -62,14 +72,14 @@ const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType)
                             src={avatar}
                             alt="avatar" className="d-flex align-self-center me-3" width="50" />
                     </div>
-                    <div className="pt-1">
-                        <p className="fw-bold mb-0">{username}</p>
-                        <p className="small text-muted">{lastMessage}</p>
+                    <div className="pt-0">
+                        <p className="fw-bold mb-1">{username}</p>
+                        <p className="small text-muted">{lastMessage.substring(0, 20) + '...'}</p>
                     </div>
                 </div>
-                <div className="pt-1 text-end">
-                    <h6 className='mb-1'><span className="badge bg-danger rounded-pill">3</span></h6>
-                    <p className="small text-muted mb-1">{lastMessageDate}</p>
+                <div className="pt-0 text-end">
+                    <p className="small text-muted mb-1">{formatTime(new Date(lastMessageDate))}</p>
+                    {!!unread && (<p className='mb-1'><span className="badge bg-danger rounded-pill">{unread}</span></p>)}
                 </div>
             </a>
         </li>

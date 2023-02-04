@@ -43,7 +43,21 @@ export const getUsers = async (req: VerifiedRequest, res: Response) => {
             }]
         });
 
-        return res.status(200).json(users);
+        const usersData = users.rows.map((user: User) => {
+            const conversation = user.conversations[0];
+
+            return {
+                _id: user._id,
+                username: user.username,
+                lastMessage: conversation.lastMessage.content,
+                lastMessageDate: conversation.lastMessage.createdAt,
+                unread: conversation.get("unread"),
+                conversationId: conversation._id,
+                avatar: user.avatar
+            }
+        })
+
+        return res.status(200).json({ count: users.count, rows: usersData });
 
     } catch (err) {
         console.log(err);

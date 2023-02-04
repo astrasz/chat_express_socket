@@ -1,13 +1,15 @@
 import { send } from 'process';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import { addMessage, MessageType } from '../../../store/slices/currentConversationSlice';
+import { addMessage } from '../../../store/slices/currentConversationSlice';
 import { RootState } from '../../../store/store';
 import { useSocketContext } from '../../../hooks/useSocketContext';
 
 import Message from './Message';
+import { increaseUnread, updateLastMessage } from '../../../store/slices/usersSlice';
+import { addMessageToConversation } from '../../../api';
 
 const MessagesList = () => {
 
@@ -24,8 +26,14 @@ const MessagesList = () => {
 
     useEffect(() => {
         socket.on('getMessage', (data: any) => {
-            const { avatar, time, senderId, content } = data;
+            const { avatar, time, senderId, content, conversationId } = data;
+            addMessageToConversation(user?.token ?? '', conversationId, content);
             dispatch(addMessage({ avatar, date: time, senderId, text: content }));
+            dispatch(updateLastMessage({ conversationId, lastMessage: content, lastMessageDate: time }))
+            if (currentConversation === null || currentConversation !== conversationId) {
+                dispatch(increaseUnread(conversationId))
+            }
+
         })
 
         return () => {
