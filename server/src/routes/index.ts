@@ -3,6 +3,7 @@ import { checkToken } from "../utils/checkToken";
 import * as authController from "../controllers/auth.controller";
 import * as usersController from "../controllers/users.controller";
 import * as conversationsController from "../controllers/conversations.controller";
+import * as participationsController from "../controllers/participations.controller";
 import { Server } from "socket.io";
 
 export const routes = (server: any, io: Server) => {
@@ -19,5 +20,6 @@ export const routes = (server: any, io: Server) => {
     server.post('/api/conversations', conversationsController.createConversation)
     server.get('/api/conversations/:id/messages', conversationsController.getMessagesByConversationId)
     server.post('/api/conversations/:id/messages', conversationsController.addMessageToConversation)
+    server.put('/api/participations/:id', participationsController.updateParticipation)
 
 }

@@ -3,6 +3,7 @@ import { Conversation } from "../models/conversation.model";
 import { User } from "../models/user.model";
 import { Message } from "../models/message.model"
 import { VerifiedRequest } from "../utils/checkToken";
+import { Participation } from "../models/participation.model";
 
 
 const conversationsFilters = (partnerId: any) => {
@@ -52,22 +53,38 @@ export const getConversations = async (req: VerifiedRequest, res: Response) => {
 export const createConversation = async (req: VerifiedRequest, res: Response) => {
     try {
         const userId = req.decodedToken.id;
-        const { partnerId } = req.body;
+        const { partnerId, lastChecked } = req.body;
 
         if (userId === partnerId) {
             return res.status(400).json('Conversation should be established beetwen diffrent users')
         }
 
-        if (partnerId === null) {
+        if (partnerId === null || lastChecked === null) {
             return res.status(400).json({ message: 'Conversation cannot be created' })
         }
 
         const newConversation = await Conversation.create();
-        newConversation.$add('participants', userId);
-        newConversation.$add('participants', partnerId);
+        await newConversation.$add('participants', userId);
+        await newConversation.$add('participants', partnerId);
         await newConversation.save();
 
-        const conversation = await Conversation.findByPk(newConversation._id);
+        const participation = await Participation.findOne({
+            where: {
+                conversationId: newConversation._id,
+                userId: userId,
+            }
+        })
+
+        if (participation instanceof Participation) {
+            participation.lastChecked = lastChecked;
+            await participation.save()
+        } else {
+            await newConversation.$remove('participants', [userId, partnerId]);
+            await newConversation.destroy();
+            return res.status(400).json({ message: 'Conversation cannot be created' })
+        }
+
+        const conversation = await Conversation.findByPk(newConversation._id, { include: { model: Participation } });
 
         if (!conversation) {
             return res.status(400).json({ message: 'Conversation cannot be found' })

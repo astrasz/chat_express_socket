@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { Op } from "sequelize";
+import { Op, literal } from "sequelize";
 import { Conversation } from "../models/conversation.model";
 import { Message } from "../models/message.model";
 import { User } from "../models/user.model";
@@ -19,7 +19,11 @@ export const getUsers = async (req: VerifiedRequest, res: Response) => {
             },
             include: [{
                 model: Conversation,
-                attributes: ['_id', 'title',],
+                attributes: [
+                    '_id',
+                    'title',
+                    [literal("(SELECT COUNT(*) FROM messages where conversationId = conversationId AND createdAt > User.lastLogout AND senderId <> User._id)"), 'unread'],
+                ],
                 include: [{
                     model: User, as: 'participants', where: {
                         _id: userId
@@ -29,7 +33,7 @@ export const getUsers = async (req: VerifiedRequest, res: Response) => {
                 }, {
                     model: Message, as: 'lastMessage',
                     attributes: ['_id', 'content', 'senderId', 'createdAt']
-                }
+                },
                 ],
                 through: {
                     attributes: []

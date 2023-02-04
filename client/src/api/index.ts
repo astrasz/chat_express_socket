@@ -43,10 +43,10 @@ export const findConversationByParticipants = async (token: string, partnerId: s
     })
 }
 
-export const createConversation = async (token: string, partnerId: any) => {
+export const createConversation = async (token: string, data: any) => {
     return await fetch('/api/conversations', {
         method: 'POST',
-        body: partnerId,
+        body: data,
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -67,6 +67,17 @@ export const addMessageToConversation = async (token: string, conversationId: st
     return await fetch(`/api/conversations/${conversationId}/messages`, {
         method: 'POST',
         body: content,
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    })
+}
+
+export const updateParticipation = async (token: string, participationId: string, lastChecked: string) => {
+    return await fetch(`/api/participations/${participationId}`, {
+        method: 'PUT',
+        body: lastChecked,
         headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'

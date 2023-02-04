@@ -9,6 +9,7 @@ interface ParticipationAttributes {
   _id: string,
   userId: string,
   conversationId: string
+  lastChecked: Date | null
 }
 
 type ParticipationCreationAttributes = Optional<ParticipationAttributes, '_id'>
@@ -40,6 +41,11 @@ export class Participation extends Model<ParticipationAttributes, ParticipationC
     allowNull: false
   })
   declare conversationId: string
+
+  @Column({
+    type: DataType.DATE,
+  })
+  declare lastChecked: Date
 
 
   @BelongsTo(() => User)

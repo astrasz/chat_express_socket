@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { createConversation, findConversationByParticipants, getMessagesByConversationId } from '../../../api';
+import { createConversation, findConversationByParticipants, getMessagesByConversationId, updateParticipation } from '../../../api';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useSocketContext } from '../../../hooks/useSocketContext';
 import { useAppDispatch } from '../../../store/hooks';
@@ -16,17 +16,23 @@ const User = ({ _id, username, lastMessage, lastMessageDate, avatar }: UserType)
         try {
             const findResponse = await findConversationByParticipants(user?.token ?? '', _id ?? '');
             let conversation = await findResponse.json();
+            const lastChecked = new Date();
 
             if (Array.isArray(conversation) && conversation.length === 0) {
                 const createResponse = await createConversation(
                     user?.token ?? '',
-                    JSON.stringify({ partnerId: _id }));
+                    JSON.stringify({ partnerId: _id, lastChecked }));
                 conversation = await createResponse.json();
             }
+            let fetchedConversation = conversation;
 
-            let conversationId = conversation._id;
             if (Array.isArray(conversation)) {
-                conversationId = conversation[0]._id
+                fetchedConversation = conversation[0]
+            }
+            const conversationId = fetchedConversation._id;
+            const participationId = fetchedConversation.Participation._id;
+            if (fetchedConversation.Participation.lastChecked !== lastChecked) {
+                await updateParticipation(user?.token ?? '', participationId, JSON.stringify({ lastChecked }));
             }
 
             const messagesResponse = await getMessagesByConversationId(user?.token ?? '', conversationId);
