@@ -2,6 +2,7 @@ import { Response } from "express";
 import { Op, literal } from "sequelize";
 import { Conversation } from "../models/conversation.model";
 import { Message } from "../models/message.model";
+import { Participation } from "../models/participation.model";
 import { User } from "../models/user.model";
 import { VerifiedRequest } from "../utils/checkToken";
 
@@ -22,7 +23,8 @@ export const getUsers = async (req: VerifiedRequest, res: Response) => {
                 attributes: [
                     '_id',
                     'title',
-                    [literal("(SELECT COUNT(*) FROM messages where conversationId = conversationId AND createdAt > User.lastLogout AND senderId <> User._id)"), 'unread'],
+                    [literal(
+                        "(SELECT COUNT(*) FROM messages as m LEFT JOIN participations as p ON p.conversationId = m.conversationId WHERE m.conversationId=conversations._id AND m.createdAt > p.lastChecked AND m.senderId=User._id AND p.userId<>User._id)"), 'unread']
                 ],
                 include: [{
                     model: User, as: 'participants', where: {
