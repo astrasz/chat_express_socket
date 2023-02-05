@@ -17,12 +17,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use((
-    err: Error,
+    err: any,
     req: Request,
     res: Response,
     next: NextFunction,
 ) => {
-    res.status(500).json({ message: err.message })
+    console.log('Error: ', err);
+    const status = err.statusCode ?? 500;
+    const message = err.message;
+    res.status(status).json({ message: message })
 });
 
 

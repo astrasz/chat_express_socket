@@ -5,7 +5,7 @@ import { useAuthContext } from '../../../hooks/useAuthContext';
 import { useSocketContext } from '../../../hooks/useSocketContext';
 import { useAppDispatch } from '../../../store/hooks';
 import { setCurrentConversation, setMessages, setPartner } from '../../../store/slices/currentConversationSlice';
-import { clearUnread } from '../../../store/slices/usersSlice';
+import { clearUnread, updatePartner } from '../../../store/slices/usersSlice';
 import { UserType } from './UsersList';
 
 const User = ({ _id, username, lastMessage, lastMessageDate, unread, avatar }: UserType) => {
@@ -47,6 +47,7 @@ const User = ({ _id, username, lastMessage, lastMessageDate, unread, avatar }: U
                 username,
                 avatar,
             }))
+            dispatch(updatePartner({ partnerId: _id, conversationId }));
             dispatch(setMessages(messages));
             dispatch(clearUnread(conversationId));
         } catch (err: any) {
@@ -74,11 +75,11 @@ const User = ({ _id, username, lastMessage, lastMessageDate, unread, avatar }: U
                     </div>
                     <div className="pt-0">
                         <p className="fw-bold mb-1">{username}</p>
-                        <p className="small text-muted">{lastMessage.substring(0, 20) + '...'}</p>
+                        {!!lastMessage && (<p className="small text-muted">{!!(lastMessage.length > 20) ? lastMessage.substring(0, 20) + '...' : lastMessage.substring(0, 20)}</p>)}
                     </div>
                 </div>
                 <div className="pt-0 text-end">
-                    <p className="small text-muted mb-1">{formatTime(new Date(lastMessageDate))}</p>
+                    {!!lastMessageDate && (<p className="small text-muted mb-1">{formatTime(new Date(lastMessageDate))}</p>)}
                     {!!unread && (<p className='mb-1'><span className="badge bg-danger rounded-pill">{unread}</span></p>)}
                 </div>
             </a>

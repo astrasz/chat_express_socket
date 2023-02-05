@@ -34,18 +34,28 @@ export const usersSlice = createSlice({
             state.push(action.payload)
         },
         increaseUnread: (state, action: PayloadAction<string>) => {
-            const usersArr = state.filter((user: UserType) => user.conversationId === action.payload);
-            usersArr[0].unread += 1;
+            const user = state.find((user: UserType) => user._id === action.payload);
+            user.unread += 1;
         },
         clearUnread: (state, action: PayloadAction<string>) => {
-            const usersArr = state.filter((user: UserType) => user.conversationId === action.payload);
-            usersArr[0].unread = 0;
+            const user = state.find((user: UserType) => user.conversationId === action.payload);
+            user.unread = 0;
+        },
+        updatePartner: (state, action: PayloadAction<any>) => {
+            const { partnerId, conversationId } = action.payload;
+            const user = state.find((user: UserType) => user._id === partnerId);
+            user.conversationId = conversationId;
         },
         updateLastMessage: (state, action: PayloadAction<any>) => {
-            const { conversationId, lastMessage, lastMessageDate } = action.payload;
-            const usersArr = state.filter((user: UserType) => user.conversationId === conversationId);
-            usersArr[0].lastMessage = lastMessage;
-            usersArr[0].lastMessageDate = lastMessageDate;
+            const { senderId, conversationId, lastMessage, lastMessageDate, participant } = action.payload;
+            let user = state.find((user: UserType) => user.conversationId === conversationId);
+            if (participant === 'partner') {
+                user = state.find((user: UserType) => user._id === senderId);
+            }
+            user.lastMessage = lastMessage;
+            user.lastMessageDate = lastMessageDate;
+
+
         }
     },
     extraReducers: (builder) => {
@@ -56,5 +66,5 @@ export const usersSlice = createSlice({
 })
 
 
-export const { addUser, increaseUnread, clearUnread, updateLastMessage } = usersSlice.actions;
+export const { addUser, increaseUnread, clearUnread, updatePartner, updateLastMessage } = usersSlice.actions;
 export default usersSlice.reducer;

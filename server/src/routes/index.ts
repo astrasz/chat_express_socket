@@ -1,5 +1,5 @@
 import { Request, Response, Application } from "express";
-import { checkToken } from "../utils/checkToken";
+import { checkToken } from "../middleware/checkToken";
 import * as authController from "../controllers/auth.controller";
 import * as usersController from "../controllers/users.controller";
 import * as conversationsController from "../controllers/conversations.controller";

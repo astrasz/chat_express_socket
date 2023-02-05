@@ -9,7 +9,7 @@ export interface UserType {
     _id?: string | null,
     username: string,
     lastMessage: string,
-    lastMessageDate: string,
+    lastMessageDate?: string | null,
     unread: number,
     conversationId: string
     avatar: string

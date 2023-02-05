@@ -8,7 +8,6 @@ interface MessageAttributes {
   _id: string;
   content: string;
   senderId: string;
-  conversationId: string;
 }
 
 type MessageCreationAtributes = Optional<MessageAttributes, '_id'>
@@ -39,17 +38,13 @@ export class Message extends Model<MessageAttributes, MessageCreationAtributes> 
   })
   declare senderId: string;
 
-  @ForeignKey(() => Conversation)
-  @Column({
-    type: DataType.UUID,
-    allowNull: false,
-  })
-  declare conversationId: string;
-
   @BelongsTo(() => User)
-  declare sender: User
+  declare sender: User;
 
-  @BelongsTo(() => Conversation)
+  @BelongsTo(() => Conversation, 'conversationId')
   declare conversation: Conversation
+
+  @BelongsTo(() => Conversation, 'conversationLastMessageId')
+  declare conversationLastMessage: Conversation
 
 }

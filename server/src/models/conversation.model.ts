@@ -10,6 +10,7 @@ interface ConversationAttributes {
   _id: string,
   title: string,
   lastMessageId: string,
+  lastMessage: Message,
   participants: User[],
   messages: Message[]
 }
@@ -40,13 +41,12 @@ export class Conversation extends Model<ConversationAttributes, ConversationCrea
   })
   declare lastMessageId?: string | null
 
-
-  @HasMany(() => Message)
+  @HasMany(() => Message, 'conversationId')
   declare messages: Message[]
 
   @BelongsToMany(() => User, () => Participation)
   declare participants: Array<User & { Participation: Participation }>
 
-  @HasOne(() => Message)
-  declare lastMessage: Message
+  @HasOne(() => Message, 'conversationLastMessageId')
+  declare lastMessage?: Message | null
 }

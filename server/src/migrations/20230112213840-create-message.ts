@@ -12,7 +12,15 @@ module.exports = {
       content: Sequelize.TEXT,
       conversationId: {
         type: Sequelize.UUID,
-        allowNull: false,
+        references: {
+          model: {
+            tableName: 'conversations',
+          },
+          key: '_id',
+        }
+      },
+      conversationLastMessageId: {
+        type: Sequelize.UUID,
         references: {
           model: {
             tableName: 'conversations',

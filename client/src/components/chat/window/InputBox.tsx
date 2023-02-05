@@ -17,13 +17,13 @@ const InputBox = () => {
 
     const handleSubmit = (e: any) => {
         e.preventDefault();
-        addMessageToConversation(user?.token ?? '', currentConversationId ?? '', JSON.stringify({ content }));
+        addMessageToConversation(user?.token ?? '', currentConversationId ?? '', content);
 
         const date = new Date().toString();
         socket.emit('message', { avatar: user?.avatar, conversationId: currentConversationId, senderId: user?.id, content, time: date });
 
         dispatch(addMessage({ avatar: user?.avatar ?? '', text: content, date, senderId: user?.id ?? '' }));
-        dispatch(updateLastMessage({ conversationId: currentConversationId, lastMessage: content, lastMessageDate: date }));
+        dispatch(updateLastMessage({ conversationId: currentConversationId, lastMessage: content, lastMessageDate: date, participant: 'sender' }));
         setContent('');
     }
 

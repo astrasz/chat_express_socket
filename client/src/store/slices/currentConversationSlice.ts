@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, current, PayloadAction } from "@reduxjs/toolkit";
 
 export interface MessageType {
     avatar: string,
@@ -36,9 +36,13 @@ export const currentConversationSlice = createSlice({
     initialState: initialCurrentConversationState,
     reducers: {
         setCurrentConversation: (state, action: PayloadAction<string>) => {
+            console.log('payload', action.payload);
             state.conversationId = action.payload;
+            console.log('state', current(state));
         },
         addMessage: (state, action: PayloadAction<MessageType>) => {
+            console.log('messages', current(state.messages));
+            console.log('payload', action.payload);
             state.messages.push(action.payload);
         },
         setMessages: (state, action: PayloadAction<Array<MessageType>>) => {

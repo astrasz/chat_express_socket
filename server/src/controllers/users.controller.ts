@@ -1,12 +1,12 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { Op, literal } from "sequelize";
 import { Conversation } from "../models/conversation.model";
 import { Message } from "../models/message.model";
 import { Participation } from "../models/participation.model";
 import { User } from "../models/user.model";
-import { VerifiedRequest } from "../utils/checkToken";
+import { VerifiedRequest } from "../middleware/checkToken";
 
-export const getUsers = async (req: VerifiedRequest, res: Response) => {
+export const getUsers = async (req: VerifiedRequest, res: Response, next: NextFunction): Promise<Response<string> | void> => {
     try {
         const userId = req.decodedToken.id;
 
@@ -49,10 +49,10 @@ export const getUsers = async (req: VerifiedRequest, res: Response) => {
             return {
                 _id: user._id,
                 username: user.username,
-                lastMessage: conversation.lastMessage.content,
-                lastMessageDate: conversation.lastMessage.createdAt,
-                unread: conversation.get("unread"),
-                conversationId: conversation._id,
+                lastMessage: conversation?.lastMessage?.content ?? '',
+                lastMessageDate: conversation?.lastMessage?.createdAt ?? null,
+                unread: conversation?.get("unread") ?? 0,
+                conversationId: conversation?._id ?? '',
                 avatar: user.avatar
             }
         })
@@ -60,7 +60,7 @@ export const getUsers = async (req: VerifiedRequest, res: Response) => {
         return res.status(200).json({ count: users.count, rows: usersData });
 
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 
 

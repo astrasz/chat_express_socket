@@ -1,12 +1,12 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { Conversation } from "../models/conversation.model";
 import { User } from "../models/user.model";
 import { Message } from "../models/message.model"
-import { VerifiedRequest } from "../utils/checkToken";
+import { VerifiedRequest } from "../middleware/checkToken";
 import { Participation } from "../models/participation.model";
 
 
-const conversationsFilters = (partnerId: any) => {
+const conversationsFilters = (partnerId: any, conversationId = '') => {
     let filters = {};
 
     if (partnerId !== '') {
@@ -20,11 +20,20 @@ const conversationsFilters = (partnerId: any) => {
             }],
         }
     }
+
+    if (conversationId !== '') {
+        filters = {
+            ...filters,
+            where: {
+                _id: conversationId
+            }
+        }
+    }
     return filters;
 }
 
 
-export const getConversations = async (req: VerifiedRequest, res: Response) => {
+export const getConversations = async (req: VerifiedRequest, res: Response, next: NextFunction): Promise<Response<string> | void> => {
     try {
         const userId = req.decodedToken.id;
         const partnerId = req.query.partner;
@@ -43,12 +52,12 @@ export const getConversations = async (req: VerifiedRequest, res: Response) => {
         return res.status(200).json(conversations);
 
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 
 }
 
-export const createConversation = async (req: VerifiedRequest, res: Response) => {
+export const createConversation = async (req: VerifiedRequest, res: Response, next: NextFunction): Promise<Response<string> | void> => {
     try {
         const userId = req.decodedToken.id;
         const { partnerId, lastChecked } = req.body;
@@ -62,8 +71,7 @@ export const createConversation = async (req: VerifiedRequest, res: Response) =>
         }
 
         const newConversation = await Conversation.create();
-        await newConversation.$add('participants', userId);
-        await newConversation.$add('participants', partnerId);
+        await newConversation.$add('participants', [userId, partnerId]);
         await newConversation.save();
 
         const participation = await Participation.findOne({
@@ -73,28 +81,38 @@ export const createConversation = async (req: VerifiedRequest, res: Response) =>
             }
         })
 
-        if (participation instanceof Participation) {
+        const partnerParticipation = await Participation.findOne({
+            where: {
+                conversationId: newConversation._id,
+                userId: partnerId,
+            }
+        })
+
+        if (participation instanceof Participation && partnerParticipation instanceof Participation) {
+            partnerParticipation.lastChecked = lastChecked;
             participation.lastChecked = lastChecked;
-            await participation.save()
+            await partnerParticipation.save();
+            await participation.save();
         } else {
             await newConversation.$remove('participants', [userId, partnerId]);
             await newConversation.destroy();
             return res.status(400).json({ message: 'Conversation cannot be created' })
         }
 
-        const conversation = await Conversation.findByPk(newConversation._id, { include: { model: Participation } });
+        const user = await User.findByPk(userId);
+        const conversation = await user?.$get('conversations', { ...conversationsFilters(partnerId, newConversation._id) });
 
-        if (!conversation) {
-            return res.status(400).json({ message: 'Conversation cannot be found' })
+        if (Array.isArray(conversation) && !(conversation[0] instanceof Conversation)) {
+            return res.status(400).json({ message: 'Conversations cannot be fetched' })
         }
 
         return res.status(200).json(conversation);
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }
 
-export const getMessagesByConversationId = async (req: VerifiedRequest, res: Response) => {
+export const getMessagesByConversationId = async (req: VerifiedRequest, res: Response, next: NextFunction): Promise<Response<string> | void> => {
 
     try {
         const conversationId = req.params.id;
@@ -124,11 +142,11 @@ export const getMessagesByConversationId = async (req: VerifiedRequest, res: Res
 
         return res.status(200).json(mappedMessages);
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 }
 
-export const addMessageToConversation = async (req: VerifiedRequest, res: Response) => {
+export const addMessageToConversation = async (req: VerifiedRequest, res: Response, next: NextFunction): Promise<Response<string> | void> => {
     try {
         const senderId = req.decodedToken.id
         const { content } = req.body;
@@ -136,18 +154,27 @@ export const addMessageToConversation = async (req: VerifiedRequest, res: Respon
         const message = await Message.create({
             content,
             senderId,
-            conversationId,
         });
 
         const sender = await User.findByPk(senderId);
         const conversation = await Conversation.findByPk(conversationId);
 
-        await sender?.$add('messages', message);
-        await conversation?.$add('messages', message);
+        if (sender instanceof User && conversation instanceof Conversation && message instanceof Message) {
+            await sender.$add('message', message);
+            await conversation.$add('message', message);
+            await conversation.$set('lastMessage', message);
+            conversation.lastMessageId = message._id;
+            await conversation.save();
+        } else {
+            if (message instanceof Message) {
+                await message.destroy();
+                return res.status(400).json({ message: 'Message cannot be created' })
+            }
+        }
 
         return res.status(201).json(message);
 
-    } catch (err) {
-        console.log(err);
+    } catch (err: any) {
+        next(err);
     }
 }

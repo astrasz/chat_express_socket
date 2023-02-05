@@ -9,7 +9,6 @@ import { useSocketContext } from '../../../hooks/useSocketContext';
 
 import Message from './Message';
 import { increaseUnread, updateLastMessage } from '../../../store/slices/usersSlice';
-import { addMessageToConversation } from '../../../api';
 
 const MessagesList = () => {
 
@@ -27,11 +26,12 @@ const MessagesList = () => {
     useEffect(() => {
         socket.on('getMessage', (data: any) => {
             const { avatar, time, senderId, content, conversationId } = data;
-            addMessageToConversation(user?.token ?? '', conversationId, content);
             dispatch(addMessage({ avatar, date: time, senderId, text: content }));
-            dispatch(updateLastMessage({ conversationId, lastMessage: content, lastMessageDate: time }))
+            dispatch(updateLastMessage({ senderId, lastMessage: content, lastMessageDate: time, participant: 'partner' }))
             if (currentConversation === null || currentConversation !== conversationId) {
-                dispatch(increaseUnread(conversationId))
+                console.log('current', currentConversation);
+                console.log('message', conversationId);
+                dispatch(increaseUnread(senderId))
             }
 
         })
@@ -39,7 +39,7 @@ const MessagesList = () => {
         return () => {
             socket.off('getMessage')
         }
-    }, []);
+    }, [currentConversation]);
 
     const scrollToBottom = () => {
         if (messagesEndRef.current) {

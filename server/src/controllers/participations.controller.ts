@@ -1,8 +1,8 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { Participation } from "../models/participation.model";
-import { VerifiedRequest } from "../utils/checkToken";
+import { VerifiedRequest } from "../middleware/checkToken";
 
-export const updateParticipation = async (req: VerifiedRequest, res: Response) => {
+export const updateParticipation = async (req: VerifiedRequest, res: Response, next: NextFunction): Promise<Response<string> | void> => {
 
     try {
         const { lastChecked } = req.body;
@@ -24,7 +24,7 @@ export const updateParticipation = async (req: VerifiedRequest, res: Response) =
         return res.status(200).json(participation);
 
     } catch (err) {
-        console.log(err);
+        next(err);
     }
 
 
