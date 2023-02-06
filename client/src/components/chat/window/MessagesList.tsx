@@ -29,8 +29,6 @@ const MessagesList = () => {
             dispatch(addMessage({ avatar, date: time, senderId, text: content }));
             dispatch(updateLastMessage({ senderId, lastMessage: content, lastMessageDate: time, participant: 'partner' }))
             if (currentConversation === null || currentConversation !== conversationId) {
-                console.log('current', currentConversation);
-                console.log('message', conversationId);
                 dispatch(increaseUnread(senderId))
             }
 

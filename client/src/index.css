@@ -40,7 +40,7 @@ section {
 
 #chat {
     height: 90vh;
-    width: 90vw;
+    width: 50vw;
 }
 
 #chat .form-control {

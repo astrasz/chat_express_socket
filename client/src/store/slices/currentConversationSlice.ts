@@ -29,20 +29,14 @@ const initialCurrentConversationState: CurrentConversationState = {
     messages: []
 }
 
-
-
 export const currentConversationSlice = createSlice({
     name: 'currentConversation',
     initialState: initialCurrentConversationState,
     reducers: {
         setCurrentConversation: (state, action: PayloadAction<string>) => {
-            console.log('payload', action.payload);
             state.conversationId = action.payload;
-            console.log('state', current(state));
         },
         addMessage: (state, action: PayloadAction<MessageType>) => {
-            console.log('messages', current(state.messages));
-            console.log('payload', action.payload);
             state.messages.push(action.payload);
         },
         setMessages: (state, action: PayloadAction<Array<MessageType>>) => {

@@ -52,7 +52,7 @@ const User = ({ _id, username, lastMessage, lastMessageDate, unread, avatar }: U
             dispatch(clearUnread(conversationId));
         } catch (err: any) {
             setError(err.message);
-            console.log('Error: ' + err.message);
+            console.log('Error: ' + err);
         }
     }
 

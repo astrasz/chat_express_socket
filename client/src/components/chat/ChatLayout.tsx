@@ -6,7 +6,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useAppDispatch } from '../../store/hooks';
 import { fetchUsers } from '../../store/slices/usersSlice';
 
-
 import LeaveButton from './LeaveButton';
 import Search from './sidebar/Search';
 import UsersList from './sidebar/UsersList';
@@ -14,8 +13,6 @@ import MessagesList from './window/MessagesList';
 import InputBox from './window/InputBox';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useAuth } from '../../hooks/useAuth';
-// import { setConnection } from './socketClient';
-// import { Socket } from 'socket.io-client';
 
 type ChatProps = {
 
@@ -81,7 +78,7 @@ const ChatLayout = ({ }: ChatProps) => {
                                     </div>
                                 </div>
                                 <div className="row card-body__chat flex-xs-row">
-                                    <div className="col-6 col-md-5 col-lg-4 col-xl-3 mb-4">
+                                    <div className="col-5 mb-4">
                                         <div className="p-3 chat-navigation">
                                             <Search
                                                 handleSearch={handleSearch}
@@ -92,8 +89,7 @@ const ChatLayout = ({ }: ChatProps) => {
                                         </div>
                                     </div>
 
-                                    <div className="col-6 col-md-7 col-lg-8 col-xl-9 chat-window">
-                                        {/* <MessagesList socket={socket} /> */}
+                                    <div className="col-7 chat-window">
                                         <MessagesList />
                                         <InputBox />
                                     </div>

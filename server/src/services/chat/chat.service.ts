@@ -1,5 +1,8 @@
 import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { JWT } from "../../config/config";
+import { Conversation } from "../../models/conversation.model";
+import { Participation } from "../../models/participation.model";
+import { User } from "../../models/user.model";
 const { secret } = JWT;
 
 export const chat = (io: any) => {
@@ -13,6 +16,25 @@ export const chat = (io: any) => {
 
                 clients[currentUser.id] = socket;
 
+                const conversations = await Conversation.findAll({
+                    attributes: ['_id'],
+                    include: [
+                        {
+                            model: User, as: 'participants', where: {
+                                _id: currentUser.id
+                            },
+                            attributes: [],
+                            required: true,
+                        }
+                    ]
+                });
+
+                for (const c of conversations) {
+                    if (c instanceof Conversation) {
+                        socket.join(c._id);
+                    }
+                }
+
                 console.log('clients', Object.keys(clients).length);
                 console.log(`Client connected: ${socket.id}`);
                 console.log(`Client userId ${currentUser.id}`)
@@ -20,7 +42,6 @@ export const chat = (io: any) => {
 
                 socket.on('disconnectUser', (socket: any) => {
                     delete clients[currentUser.id]
-                    console.log('clients', Object.keys(clients).length);
                     console.log('user disconnected - custom');
                 })
 
