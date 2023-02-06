@@ -75,7 +75,7 @@ const User = ({ _id, username, lastMessage, lastMessageDate, unread, avatar }: U
                     </div>
                     <div className="pt-0">
                         <p className="fw-bold mb-1">{username}</p>
-                        {!!lastMessage && (<p className="small text-muted">{!!(lastMessage.length > 20) ? lastMessage.substring(0, 20) + '...' : lastMessage.substring(0, 20)}</p>)}
+                        {!!lastMessage && (<p className="small text-muted">{!!(lastMessage.length > 20) ? lastMessage.substring(0, 20).trim() + '...' : lastMessage.substring(0, 20)}</p>)}
                     </div>
                 </div>
                 <div className="pt-0 text-end">

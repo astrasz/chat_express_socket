@@ -116,7 +116,7 @@ export const getMessagesByConversationId = async (req: VerifiedRequest, res: Res
 
     try {
         const conversationId = req.params.id;
-
+        const { offset } = req.query;
         if (conversationId === '') {
             return res.status(400).json({ message: 'Conversation cannot be found' });
         }
@@ -128,7 +128,13 @@ export const getMessagesByConversationId = async (req: VerifiedRequest, res: Res
         }
 
         const messages = await conversation.$get('messages', {
-            include: { model: User, as: 'sender', attributes: ['_id', 'avatar'] }, order: [['createdAt', 'ASC']]
+            include: {
+                model: User, as: 'sender',
+                attributes: ['_id', 'avatar']
+            },
+            order: [['createdAt', 'DESC']],
+            offset: (typeof offset === 'string') ? +offset : 0,
+            limit: 20,
         });
 
         const mappedMessages = messages.map(message => {
@@ -139,6 +145,8 @@ export const getMessagesByConversationId = async (req: VerifiedRequest, res: Res
                 senderId: message.sender._id
             }
         })
+
+        mappedMessages.sort((a, b) => a.date > b.date ? 1 : -1)
 
         return res.status(200).json(mappedMessages);
     } catch (err) {

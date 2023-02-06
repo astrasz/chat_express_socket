@@ -8,7 +8,8 @@ export interface MessageType {
 }
 
 export interface MessagesType {
-    messages: Array<MessageType | null>
+    messages: MessageType[]
+    // messages: Array<MessageType | null>
 }
 
 interface PartnerType {
@@ -39,6 +40,15 @@ export const currentConversationSlice = createSlice({
         addMessage: (state, action: PayloadAction<MessageType>) => {
             state.messages.push(action.payload);
         },
+        addMessages: (state, action: PayloadAction<Array<MessageType | null>>) => {
+            const messages = action.payload;
+            if (Array.isArray(messages)) {
+                for (let message of state.messages) {
+                    messages.push(message)
+                }
+            }
+            state.messages = messages
+        },
         setMessages: (state, action: PayloadAction<Array<MessageType>>) => {
             state.messages = action.payload
         },
@@ -51,5 +61,5 @@ export const currentConversationSlice = createSlice({
 })
 
 
-export const { setCurrentConversation, addMessage, setPartner, setMessages } = currentConversationSlice.actions;
+export const { setCurrentConversation, addMessage, addMessages, setPartner, setMessages } = currentConversationSlice.actions;
 export default currentConversationSlice.reducer;

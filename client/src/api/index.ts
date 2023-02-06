@@ -54,8 +54,13 @@ export const createConversation = async (token: string, data: any) => {
     })
 }
 
-export const getMessagesByConversationId = async (token: string, conversationId: string) => {
-    return await fetch(`/api/conversations/${conversationId}/messages`, {
+export const getMessagesByConversationId = async (token: string, conversationId: string, queryParams: any = {}) => {
+    const { offset } = queryParams;
+    let url = `/api/conversations/${conversationId}/messages`;
+    if (offset) {
+        url = `/api/conversations/${conversationId}/messages?offset=${offset}`;
+    }
+    return await fetch(url, {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${token}`

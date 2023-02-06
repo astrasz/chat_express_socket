@@ -1,20 +1,20 @@
-import { send } from 'process';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
 import { useAuthContext } from '../../../hooks/useAuthContext';
-import { addMessage } from '../../../store/slices/currentConversationSlice';
+import { addMessage, addMessages } from '../../../store/slices/currentConversationSlice';
 import { RootState } from '../../../store/store';
 import { useSocketContext } from '../../../hooks/useSocketContext';
 
 import Message from './Message';
 import { increaseUnread, updateLastMessage } from '../../../store/slices/usersSlice';
+import { getMessagesByConversationId } from '../../../api';
 
 const MessagesList = () => {
-
+    const [scrollTopNumber, setScrollTopNumber] = useState<number>(1)
     const { socket } = useSocketContext();
     const { user } = useAuthContext();
-    const messagesEndRef = useRef<null | HTMLDivElement>(null);
+    let messagesEndRef = useRef<null | HTMLDivElement>(null);
     const dispatch = useDispatch();
 
     const currentConversation = useSelector((state: RootState) => state.currentConversation.conversationId);
@@ -31,7 +31,6 @@ const MessagesList = () => {
             if (currentConversation === null || currentConversation !== conversationId) {
                 dispatch(increaseUnread(senderId))
             }
-
         })
 
         return () => {
@@ -46,15 +45,32 @@ const MessagesList = () => {
     }
 
     useEffect(() => {
-        scrollToBottom()
+        if (scrollTopNumber === 1) {
+            scrollToBottom()
+        }
+        if (messages.length === 10) {
+            setScrollTopNumber(1);
+        }
     }, [messages]);
+
+
+    const handleScroll = async (e: any) => {
+        const top = e.target.scrollTop === 0;
+        if (top) {
+            setScrollTopNumber(prevState => ++prevState);
+            const messagesRes = await getMessagesByConversationId(user?.token ?? '', currentConversation ?? '', { offset: scrollTopNumber * 10 });
+            const messages = await messagesRes.json();
+            dispatch(addMessages(messages));
+        }
+    }
+
 
     return (
         <div className='chat-window__messages'>
             {partnersUsername && (
                 <h5>Chat with {partnersUsername}</h5>
             )}
-            <ul className="pt-3 pe-3 chat-window__messages" data-mdb-perfect-scrollbar="true">
+            <ul className="pt-3 pe-3 chat-window__messages" data-mdb-perfect-scrollbar="true" onScroll={handleScroll}>
                 {currentConversation && !!messages.length && messages.map((message, index) => {
                     const avatar = message?.senderId === user?.id ? user?.avatar : partnerAvatar;
 
