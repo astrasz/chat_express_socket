@@ -33,9 +33,12 @@ const MessagesList: React.FC<Props> = ({ setIsTypingRef, isTypingRef }) => {
 
     useEffect(() => {
         socket.on('getMessage', (data: any) => {
-            setRef({ conversationId: '', content: '' })
             const { avatar, time, senderId, content, conversationId } = data;
-            dispatch(addMessage({ avatar, date: time, senderId, text: content }));
+            if (currentConversation === data.conversationId) {
+                setRef({ conversationId: '', content: '' })
+
+                dispatch(addMessage({ avatar, date: time, senderId, text: content }));
+            }
             dispatch(updateLastMessage({ senderId, lastMessage: content, lastMessageDate: time, participant: 'partner' }))
             if (currentConversation === null || currentConversation !== conversationId) {
                 dispatch(increaseUnread(senderId))
@@ -49,19 +52,22 @@ const MessagesList: React.FC<Props> = ({ setIsTypingRef, isTypingRef }) => {
 
     useEffect(() => {
         socket.on('getTyping', (data: any) => {
-            if (messagesListRef.current) {
-                const isNotScrolled = messagesListRef.current.scrollHeight - messagesListRef.current.scrollTop < messagesListRef.current.clientHeight + 50;
-                if (isNotScrolled === true) {
-                    scrollToBottom();
+            if (currentConversation === data.conversationId) {
+
+                if (messagesListRef.current) {
+                    const isNotScrolled = messagesListRef.current.scrollHeight - messagesListRef.current.scrollTop < messagesListRef.current.clientHeight + 50;
+                    if (isNotScrolled === true) {
+                        scrollToBottom();
+                    }
                 }
+                setRef(data);
             }
-            setRef(data);
         },);
 
         return () => {
             socket.off('getTyping');
         }
-    }, [isTypingRef])
+    }, [isTypingRef, currentConversation])
 
 
     useEffect(() => {

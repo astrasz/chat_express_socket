@@ -24,7 +24,6 @@ export const chat = (io: any) => {
         //     socket.sendBuffer = [];
         // });
         if (socket.connected === true) {
-
             const token = socket.handshake.auth.token.split(' ')[1];
             try {
                 const currentUser = await <any>jwt.verify(token ?? '', secret ?? '');
