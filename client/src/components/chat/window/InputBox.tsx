@@ -8,7 +8,11 @@ import { addMessage } from '../../../store/slices/currentConversationSlice';
 import { updateLastMessage } from '../../../store/slices/usersSlice';
 import { RootState } from '../../../store/store';
 
-const InputBox = () => {
+type Props = {
+    setIsTypingRef: (data: { conversationId: string; content: string | null }) => void,
+}
+
+const InputBox: React.FC<Props> = ({ setIsTypingRef }) => {
     const { socket } = useSocketContext()
     const [content, setContent] = useState('')
     const dispatch = useAppDispatch();
@@ -29,7 +33,8 @@ const InputBox = () => {
 
     const handleChange = (e: any) => {
         const content = e.target.value;
-        setContent(content)
+        setContent(content);
+        socket.emit('typing', { conversationId: currentConversationId, content })
     }
 
     return (

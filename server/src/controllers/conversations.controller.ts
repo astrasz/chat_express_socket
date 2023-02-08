@@ -134,7 +134,7 @@ export const getMessagesByConversationId = async (req: VerifiedRequest, res: Res
             },
             order: [['createdAt', 'DESC']],
             offset: (typeof offset === 'string') ? +offset : 0,
-            limit: 20,
+            limit: 10,
         });
 
         const mappedMessages = messages.map(message => {

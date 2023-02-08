@@ -1,7 +1,9 @@
 import React from 'react';
 import { useAuthContext } from '../../../hooks/useAuthContext';
 import { MessageType } from '../../../store/slices/currentConversationSlice';
-import { isSameDay, formatDistanceToNow, differenceInMinutes, format } from 'date-fns';
+import { isSameDay, formatDistanceToNow, differenceInMinutes, format, isSameYear } from 'date-fns';
+
+
 
 const Message = ({ avatar, text, date, senderId }: MessageType) => {
 
@@ -13,13 +15,22 @@ const Message = ({ avatar, text, date, senderId }: MessageType) => {
 
 
     const formatTime = (time: Date) => {
-        if (differenceInMinutes(new Date(), time) < 60) {
-            return formatDistanceToNow(new Date(time), { addSuffix: true })
-        } else if (isSameDay(time, new Date())) {
-            return format(time, 'HH:mm');
-        } else {
-            return time.toLocaleString();
+        const now = new Date();
+        let newFormat;
+        switch (true) {
+            case differenceInMinutes(now, time) < 60:
+                newFormat = formatDistanceToNow(new Date(time), { addSuffix: true });
+                break;
+            case isSameDay(time, now):
+                newFormat = format(time, 'HH:mm');
+                break;
+            case isSameYear(time, now):
+                newFormat = format(time, 'd.mm HH:mm');
+                break;
+            default:
+                newFormat = format(time, 'd.mm.YY HH:mm');
         }
+        return newFormat;
     }
 
     return (

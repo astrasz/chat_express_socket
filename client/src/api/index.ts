@@ -25,6 +25,9 @@ export const logout = async (token: string) => {
     })
 }
 
+
+//users
+
 export const getUsers = async (token: string | '') => {
     return await fetch('/api/users', {
         method: 'GET',
@@ -33,6 +36,8 @@ export const getUsers = async (token: string | '') => {
         }
     })
 }
+
+//conversations
 
 export const findConversationByParticipants = async (token: string, partnerId: string) => {
     return await fetch(`/api/conversations?partner=${partnerId}`, {

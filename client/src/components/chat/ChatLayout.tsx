@@ -13,12 +13,17 @@ import MessagesList from './window/MessagesList';
 import InputBox from './window/InputBox';
 import { useAuthContext } from '../../hooks/useAuthContext';
 import { useAuth } from '../../hooks/useAuth';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 type ChatProps = {
 
 }
 
-const ChatLayout = ({ }: ChatProps) => {
+const ChatLayout: React.FC = ({ }: ChatProps) => {
+    const [isTyping, setIsTyping] = useState<boolean>(false)
+    const isTypingRef = useRef<boolean>(false)
+    const currentConversation = useSelector((state: RootState) => state.currentConversation.conversationId)
     const [error, setError] = useState(false);
     const [searchText, setSearchText] = useState<string>('')
     const dispatch = useAppDispatch();
@@ -35,13 +40,13 @@ const ChatLayout = ({ }: ChatProps) => {
     }
 
     useEffect(() => {
-        if (user?.token) {
+        if (user && user.token !== 'Bearer ') {
             dispatch(fetchUsers(user.token))
                 .unwrap()
                 .catch((err: any) => {
                     setError(true);
                     if (err.auth === false) {
-                        logOut()
+                        return logOut();
                     }
                     notify(`${err.message}: cannot fetch users list.`)
                 });
@@ -51,6 +56,17 @@ const ChatLayout = ({ }: ChatProps) => {
 
     const handleSearch = (searchText: string) => {
         setSearchText(searchText);
+    }
+
+    const setIsTypingRef = (data: { conversationId: string, content: string | null }) => {
+        if (isTyping === false) {
+            setIsTyping(true);
+            isTypingRef.current = true;
+        }
+        if (data.content?.length === 0) {
+            setIsTyping(false);
+            isTypingRef.current = false
+        }
     }
 
     return (
@@ -90,8 +106,19 @@ const ChatLayout = ({ }: ChatProps) => {
                                     </div>
 
                                     <div className="col-7 chat-window">
-                                        <MessagesList />
-                                        <InputBox />
+                                        <MessagesList
+                                            setIsTypingRef={setIsTypingRef}
+                                            isTypingRef={isTypingRef} />
+                                        {!!currentConversation && (
+                                            <InputBox
+                                                setIsTypingRef={setIsTypingRef}
+                                            />
+                                        )}
+                                        {!currentConversation && (
+                                            <div className='start-question'>
+                                                {/* <h3>pick someone to start...</h3> */}
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

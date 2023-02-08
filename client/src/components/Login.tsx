@@ -39,7 +39,6 @@ const Login = () => {
 
             if (response.ok) {
                 logIn(result.data);
-                // return navigate('/');
             }
 
             setErrors([result]);

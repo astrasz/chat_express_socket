@@ -19,12 +19,9 @@ export const SocketContextProvider = (props: { children: ReactNode }) => {
 
     const socketInstance = io(url, {
         autoConnect: false,
-        transportOptions: {
-            polling: {
-                extraHeaders: {
-                    token: `Bearer ${token}`
-                }
-            }
+        withCredentials: true,
+        auth: {
+            token: `Bearer ${token}`
         }
     })
 

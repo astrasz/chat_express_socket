@@ -60,7 +60,7 @@ const User = ({ _id, username, lastMessage, lastMessageDate, unread, avatar }: U
         if (isSameDay(time, new Date())) {
             return format(time, 'HH:mm');
         } else {
-            return time.toLocaleString();
+            return format(time, 'd.mm.Y HH:mm');
         }
     }
 
