@@ -23,7 +23,7 @@ const UsersList = (props: { searching: string }) => {
     useEffect(() => {
         let users = usersState;
         if (props.searching !== '') {
-            users = usersState.filter((user: UserType) => user.username.search(props.searching) !== -1)
+            users = usersState.filter((user: UserType) => user.username.toLowerCase().search(props.searching.toLowerCase()) !== -1)
         }
         setUsers(users)
     }, [usersState, props.searching])
