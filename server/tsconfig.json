@@ -21,9 +21,10 @@
     "include": [
         "src/**/*.ts",
         "index.ts",
-        ".sequlizerc"
+        ".sequlizerc",
+        "src/test/checkToken-middleware.js"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
     ]
 }

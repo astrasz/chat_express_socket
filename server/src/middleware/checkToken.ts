@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express"
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { JWT } from "../config/config";
 import { User } from "../models/user.model";
@@ -13,9 +13,12 @@ export interface VerifiedRequest extends Request {
 export const checkToken = async (req: VerifiedRequest, res: Response, next: NextFunction) => {
     const { authorization } = req.headers;
     const token = authorization?.split(' ')[1];
-
-    if (token === null) return res.status(403).send({ auth: false, message: 'Authorization failed' });
+    if (token === undefined) {
+        return res.status(403).send({ auth: false, message: 'Authorization failed' });
+    }
     try {
+
+        if (token === null) return res.status(403).send({ auth: false, message: 'Authorization failed' });
         const decodedToken = await <any>jwt.verify(token ?? '', secret ?? '');
         const userId = decodedToken.id
         const user = await User.findByPk(userId);
