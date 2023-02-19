@@ -9,7 +9,9 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
     try {
         const { email, username, password, repeatedPassword, avatar } = req.body;
 
-        if (username === null) return res.status(400).json({ message: 'Username is required' });
+        if (username === null || username === '') {
+            return res.status(400).json({ message: 'Username is required' });
+        }
 
         const prevUser: User | null = await User.findOne({ where: { email } })
         if (prevUser) return res.status(400).json({ message: 'Cannot sign up with this email' })
@@ -29,6 +31,7 @@ export const signup = async (req: Request, res: Response, next: NextFunction): P
         return res.status(200).json({ success: true, message: `User ${user.toJSON().username} has been created successfully` });
 
     } catch (err) {
+        console.log('error', err);
         next(err);
         // return res.status(400).json({ message: 'User cannot be created' });
     }

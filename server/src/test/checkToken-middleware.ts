@@ -1,5 +1,5 @@
-const expect = require('chai').expect;
-const checkTokenMiddleware = require('../middleware/checkToken.ts')
+import { expect } from 'chai';
+const checkTokenMiddleware = require('../middleware/checkToken');
 
 describe('checkToken middleware', function () {
     it('should return 403 status code with message if authorization header is single string', async function () {
